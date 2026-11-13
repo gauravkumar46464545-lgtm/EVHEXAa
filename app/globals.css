@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+@tailwind base;@tailwind components;@tailwind utilities;
+body{background:#070b10;color:#dbe6ee;font-family:Inter,sans-serif}
+.inp{width:100%;background:#070b10;border:1px solid #1c2a37;border-radius:.5rem;padding:.6rem .8rem;outline:none}
+.inp:focus{border-color:#19d3ff}
+.btn{background:linear-gradient(90deg,#19d3ff,#10e39a);color:#041016;font-weight:600;border-radius:.5rem;padding:.55rem 1.1rem}
+button:focus-visible,a:focus-visible{outline:2px solid #10e39a;outline-offset:2px}
+@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+.sweep{animation:sweep 4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.sweep{animation:none}}
+
+@keyframes drive{from{transform:translateX(-280px)}to{transform:translateX(100vw)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes road{from{background-position:0 0}to{background-position:-80px 0}}
+.car{animation:drive 10s linear infinite}
+.wheel{transform-box:fill-box;transform-origin:center;animation:spin .5s linear infinite}
+.road{background:repeating-linear-gradient(90deg,#19d3ff55 0 40px,transparent 40px 80px);animation:road .6s linear infinite}
+@media (prefers-reduced-motion:reduce){.car{animation:none;transform:translateX(30vw)}.wheel,.road{animation:none}}
+
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:fade 25s infinite}
+@keyframes fade{0%{opacity:0}4%{opacity:1}20%{opacity:1}24%{opacity:0}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.slide{animation:none}.slide:first-child{opacity:1}}
