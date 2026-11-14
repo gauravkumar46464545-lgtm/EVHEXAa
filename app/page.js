@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import Media from "@/components/Media";
 import { Instagram, Facebook, Youtube, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
 
 const fmt = (d) => {
   const x = new Date(d);
-  const date = x.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-  const time = x.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  const date = x.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+  const time = x.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" });
   return `Posted on: ${date} at ${time}`;
 };
 const short = (d) => fmt(d).replace("Posted on: ", "");
@@ -14,7 +16,7 @@ const api = async (url, opt = {}, pw) => {
   const j = await r.json(); if (!r.ok) throw new Error(j.error || "Request failed"); return j;
 };
 const post = (url, body, pw) => api(url, { method: "POST", body: JSON.stringify(body) }, pw);
-const Img = ({ src, className }) => src ? <img src={src} alt="" className={className} loading="lazy" /> : <div className={className + " bg-gradient-to-br from-panel to-[#12303a]"} />;
+const Img = ({ src, className, alt = "" }) => src ? <img src={src} alt={alt} className={className} loading="lazy" /> : <div className={className + " bg-gradient-to-br from-panel to-[#12303a]"} />;
 const Stars = ({ value, onPick }) => (
   <div className="flex gap-1">{[1, 2, 3, 4, 5].map((n) => (
     <button type="button" key={n} onClick={() => onPick?.(n)} aria-label={`${n} star`} disabled={!onPick}>
@@ -80,7 +82,7 @@ export default function Home() {
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {features.map((f) => (
               <article key={f._id} className="overflow-hidden rounded-lg border border-[#16222d] bg-panel">
-                <Img src={f.image} className="h-24 w-full object-cover" />
+                <Media src={f.media} type={f.mediaType} alt={f.title} />
                 <div className="p-3"><span className="rounded bg-hexa/15 px-1.5 py-0.5 text-[11px] text-hexa">{f.badge}</span>
                   <h3 className="mt-1.5 font-display text-base font-semibold leading-snug">{f.title}</h3>
                   <p className="mt-1 line-clamp-2 text-xs text-slate-400">{f.description}</p>
@@ -94,37 +96,19 @@ export default function Home() {
           {!articles.length && <p className="mt-4 text-slate-500">No articles published yet.</p>}
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((a) => (
-              <article key={a._id} className="cursor-pointer overflow-hidden rounded-xl border border-[#16222d] bg-panel hover:border-volt" onClick={() => setOpen(a._id)}>
-                <Img src={a.image} className="h-44 w-full object-cover" />
+              <Link key={a._id} href={`/articles/${a.slug}`} className="block overflow-hidden rounded-xl border border-[#16222d] bg-panel hover:border-volt">
+                <Img src={a.image} alt={a.title} className="h-44 w-full object-cover" />
                 <div className="p-4"><h3 className="font-display text-xl font-semibold">{a.title}</h3>
                   <p className="mt-1 line-clamp-2 text-sm text-slate-400">{a.content}</p>
                   <p className="mt-3 text-xs text-slate-500">By {a.author} · {fmt(a.createdAt)}</p>
                   <p className="mt-2 flex gap-4 text-xs text-slate-400"><span>👍 {a.likes}</span><span>👎 {a.dislikes}</span><span>💬 {a.comments.length}</span></p></div>
-              </article>))}
+              </Link>))}
           </div>
         </section>
 
         <ReviewSection reviews={reviews} onAdded={(r) => setReviews([r, ...reviews])} />
-        {pw && <AdminPanel pw={pw} onDone={load} />}
+        {pw && <AdminPanel pw={pw} articles={articles} onDone={load} />}
       </main>
-
-      {current && (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-ink">
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#16222d] bg-ink/90 px-4 py-3 backdrop-blur">
-            <button onClick={() => setOpen(null)} className="rounded-lg border border-[#1c2a37] px-4 py-1.5 text-sm hover:border-volt">← Back</button>
-            <span className="font-display text-lg text-slate-400">EV HEXA</span></div>
-          <Img src={current.image} className="h-[260px] w-full object-cover md:h-[380px]" />
-          <article className="mx-auto max-w-4xl px-4 pb-16 pt-10">
-            <h1 className="text-center font-display text-3xl font-semibold leading-tight md:text-5xl">{current.title}</h1>
-            <p className="mt-3 text-center text-sm text-slate-500">By {current.author} · {fmt(current.createdAt)}</p>
-            <div className="mt-8"><Body text={current.content} /></div>
-            <div className="mt-8 flex gap-3">
-              <button onClick={() => vote(current, "like")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${votes[current._id] === "like" ? "border-hexa text-hexa" : "border-[#1c2a37]"}`}><ThumbsUp size={16} />{current.likes}</button>
-              <button onClick={() => vote(current, "dislike")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${votes[current._id] === "dislike" ? "border-red-400 text-red-400" : "border-[#1c2a37]"}`}><ThumbsDown size={16} />{current.dislikes}</button>
-            </div>
-            <Comments a={current} onUpdate={replace} setMsg={setMsg} />
-          </article>
-        </div>)}
 
       {showLogin && <Login onClose={() => setShowLogin(false)} onOk={(p) => { setPw(p); setShowLogin(false); goAdmin(); }} />}
 
@@ -161,20 +145,6 @@ function Login({ onClose, onOk }) {
     </div>);
 }
 
-function Comments({ a, onUpdate, setMsg }) {
-  const [name, setName] = useState(""); const [text, setText] = useState("");
-  const send = async (e) => { e.preventDefault(); try { onUpdate(await post(`/api/articles/${a._id}`, { action: "comment", name, text })); setText(""); } catch (x) { setMsg(x.message); } };
-  return (
-    <div className="mt-8"><h3 className="font-display text-xl font-semibold">Comments ({a.comments.length})</h3>
-      <form onSubmit={send} className="mt-3 space-y-2">
-        <input className="inp" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} required />
-        <textarea className="inp" rows={3} placeholder="Write a comment" value={text} onChange={(e) => setText(e.target.value)} required />
-        <button className="btn">Post comment</button></form>
-      <ul className="mt-4 space-y-3">{[...a.comments].reverse().map((c, i) => (
-        <li key={i} className="rounded-lg border border-[#16222d] p-3"><p className="text-sm font-medium text-volt">{c.name}</p>
-          <p className="text-sm text-slate-300">{c.text}</p><p className="mt-1 text-xs text-slate-500">{short(c.createdAt)}</p></li>))}</ul>
-    </div>);
-}
 
 function ReviewSection({ reviews, onAdded }) {
   const [f, setF] = useState({ name: "", rating: 5, text: "" }); const [err, setErr] = useState("");
@@ -200,41 +170,58 @@ function ReviewSection({ reviews, onAdded }) {
     </section>);
 }
 
-function ImagePick({ obj, set, pw, setNote }) {
+function MediaPick({ obj, set, pw, setNote, field, label }) {
   const upload = async (file) => {
-    if (!file) return; setNote("Uploading image…");
+    if (!file) return; setNote("Uploading…");
     const fd = new FormData(); fd.append("file", file);
     try {
       const r = await fetch("/api/upload", { method: "POST", body: fd, headers: { "x-admin-password": pw } });
-      const j = await r.json(); if (!r.ok) throw new Error(j.error); set({ ...obj, image: j.url }); setNote("Image uploaded.");
+      const j = await r.json(); if (!r.ok) throw new Error(j.error);
+      set({ ...obj, [field]: j.url, ...(field === "media" ? { mediaType: j.type } : {}) }); setNote("Upload complete.");
     } catch (e) { setNote(e.message); }
   };
-  return (<div><input className="inp" placeholder="Image URL (or upload a file below)" value={obj.image} onChange={(e) => set({ ...obj, image: e.target.value })} />
-    <input type="file" accept="image/*" className="mt-2 text-sm" onChange={(e) => upload(e.target.files[0])} /></div>);
+  return (<div><input className="inp" placeholder={label} value={obj[field]} onChange={(e) => set({ ...obj, [field]: e.target.value, ...(field === "media" ? { mediaType: "" } : {}) })} />
+    <input type="file" accept={field === "media" ? "image/*,video/*" : "image/*"} className="mt-2 text-sm" onChange={(e) => upload(e.target.files[0])} />
+    {field === "media" && obj.media && <div className="mt-2 w-48 overflow-hidden rounded"><Media src={obj.media} type={obj.mediaType} /></div>}</div>);
 }
 
-function AdminPanel({ pw, onDone }) {
-  const E1 = { title: "", badge: "", description: "", image: "" }, E2 = { title: "", author: "", image: "", content: "" };
-  const [fe, setFe] = useState(E1); const [ar, setAr] = useState(E2); const [note, setNote] = useState("");
-  const submit = (url, body, reset) => async (e) => { e.preventDefault(); try { await post(url, body, pw); reset(); setNote("Published."); onDone(); } catch (x) { setNote(x.message); } };
+function AdminPanel({ pw, articles, onDone }) {
+  const E1 = { title: "", badge: "", description: "", media: "", mediaType: "" }, E2 = { title: "", author: "", image: "", content: "", metaDescription: "" };
+  const [fe, setFe] = useState(E1); const [ar, setAr] = useState(E2); const [editId, setEditId] = useState(null); const [note, setNote] = useState("");
+  const run = async (fn, ok) => { try { await fn(); setNote(ok); onDone(); } catch (x) { setNote(x.message); } };
+  const addFeature = (e) => { e.preventDefault(); run(async () => { await post("/api/features", fe, pw); setFe(E1); }, "Feature added."); };
+  const saveArticle = (e) => { e.preventDefault(); run(async () => {
+    if (editId) await api(`/api/articles/${editId}`, { method: "PUT", body: JSON.stringify(ar) }, pw); else await post("/api/articles", ar, pw);
+    setAr(E2); setEditId(null); }, editId ? "Article updated." : "Article published."); };
+  const startEdit = (a) => { setEditId(a._id); setAr({ title: a.title, author: a.author, image: a.image || "", content: a.content, metaDescription: a.metaDescription || "" }); document.getElementById("articleForm")?.scrollIntoView({ behavior: "smooth" }); };
+  const del = (a) => { if (confirm(`Delete "${a.title}"?`)) run(() => api(`/api/articles/${a._id}`, { method: "DELETE" }, pw), "Article deleted."); };
   return (
     <section id="admin" className="mx-auto max-w-6xl px-4 py-14">
       <h2 className="font-display text-3xl font-semibold">Admin panel</h2>
       {note && <p className="mt-2 text-sm text-hexa">{note}</p>}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <form onSubmit={submit("/api/features", fe, () => setFe(E1))} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
-          <h3 className="font-display text-xl font-semibold">Add feature</h3>
+        <form onSubmit={addFeature} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
+          <h3 className="font-display text-xl font-semibold">Add feature (photo or video)</h3>
           <input className="inp" placeholder="Feature title" value={fe.title} onChange={(e) => setFe({ ...fe, title: e.target.value })} required />
           <input className="inp" placeholder="Category or spec badge (e.g. 520 km range)" value={fe.badge} onChange={(e) => setFe({ ...fe, badge: e.target.value })} required />
           <textarea className="inp" rows={3} placeholder="Description" value={fe.description} onChange={(e) => setFe({ ...fe, description: e.target.value })} required />
-          <ImagePick obj={fe} set={setFe} pw={pw} setNote={setNote} /><button className="btn">Add feature</button></form>
-        <form onSubmit={submit("/api/articles", ar, () => setAr(E2))} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
-          <h3 className="font-display text-xl font-semibold">Publish article</h3>
+          <MediaPick obj={fe} set={setFe} pw={pw} setNote={setNote} field="media" label="Photo / video URL (mp4 or YouTube link), or upload a file" /><button className="btn">Add feature</button></form>
+        <form id="articleForm" onSubmit={saveArticle} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
+          <h3 className="font-display text-xl font-semibold">{editId ? "Edit article" : "Publish article"}</h3>
           <input className="inp" placeholder="Article title" value={ar.title} onChange={(e) => setAr({ ...ar, title: e.target.value })} required />
           <input className="inp" placeholder="Author" value={ar.author} onChange={(e) => setAr({ ...ar, author: e.target.value })} required />
           <textarea className="inp" rows={5} placeholder="Content (blank line = new paragraph; table rows: Col A | Col B | Col C)" value={ar.content} onChange={(e) => setAr({ ...ar, content: e.target.value })} required />
-          <ImagePick obj={ar} set={setAr} pw={pw} setNote={setNote} /><button className="btn">Publish article</button></form>
+          <input className="inp" maxLength={160} placeholder="SEO meta description (optional, up to 160 characters)" value={ar.metaDescription} onChange={(e) => setAr({ ...ar, metaDescription: e.target.value })} />
+          <MediaPick obj={ar} set={setAr} pw={pw} setNote={setNote} field="image" label="Banner image URL (or upload a file)" />
+          <div className="flex gap-2"><button className="btn">{editId ? "Save changes" : "Publish article"}</button>
+            {editId && <button type="button" onClick={() => { setEditId(null); setAr(E2); }} className="rounded-lg border border-[#1c2a37] px-4">Cancel</button>}</div></form>
       </div>
+      <h3 className="mt-10 font-display text-xl font-semibold">Manage published articles</h3>
+      <ul className="mt-3 space-y-2">{articles.map((a) => (
+        <li key={a._id} className="flex items-center justify-between gap-3 rounded-lg border border-[#16222d] bg-panel px-4 py-3">
+          <span className="min-w-0 truncate text-sm">{a.title} <span className="text-xs text-slate-500">· {fmt(a.createdAt).replace("Posted on: ", "")}</span></span>
+          <span className="flex shrink-0 gap-2"><button onClick={() => startEdit(a)} className="rounded border border-[#1c2a37] px-3 py-1 text-sm hover:border-volt">Edit</button>
+            <button onClick={() => del(a)} className="rounded border border-red-500/40 px-3 py-1 text-sm text-red-400">Delete</button></span></li>))}</ul>
     </section>);
 }
 
@@ -246,19 +233,6 @@ function MovingCar() {
     </div>);
 }
 
-function Body({ text }) {
-  return text.split(/\n\s*\n/).map((blk, i) => {
-    const lines = blk.trim().split("\n");
-    if (lines.length > 1 && lines.every((l) => l.includes("|"))) {
-      const rows = lines.map((l) => l.split("|").map((c) => c.trim()).filter((c, j, a) => !(c === "" && (j === 0 || j === a.length - 1))));
-      return (
-        <div key={i} className="my-6 overflow-x-auto"><table className="w-full border-collapse text-left text-sm md:text-base">
-          <thead><tr>{rows[0].map((c, j) => <th key={j} className="border border-slate-500 bg-[#1b3a8a] px-3 py-2 font-semibold">{c}</th>)}</tr></thead>
-          <tbody>{rows.slice(1).map((r, k) => <tr key={k}>{r.map((c, j) => <td key={j} className="border border-slate-600 px-3 py-2">{c}</td>)}</tr>)}</tbody></table></div>);
-    }
-    return <p key={i} className="my-4 whitespace-pre-line text-[17px] leading-8 text-slate-300">{blk}</p>;
-  });
-}
 
 function HeroSlides() {
   return (

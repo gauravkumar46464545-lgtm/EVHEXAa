@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, isAdmin } from "@/lib/db";
 import { Article } from "@/models";
 // body: {action:"like"|"dislike"|"unlike"|"undislike"} or {action:"comment",name,text}
 export async function POST(req, { params }) {
@@ -14,4 +14,15 @@ export async function POST(req, { params }) {
     u = { $inc: map[b.action] };
   }
   return NextResponse.json(await Article.findByIdAndUpdate(params.id, u, { new: true }).lean());
+}
+
+// Admin: edit a published article (slug stays the same so SEO links never break)
+export async function PUT(req, { params }) {
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  await db(); const { title, author, image, content, metaDescription } = await req.json();
+  return NextResponse.json(await Article.findByIdAndUpdate(params.id, { title, author, image, content, metaDescription }, { new: true }).lean());
+}
+export async function DELETE(req, { params }) {
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  await db(); await Article.findByIdAndDelete(params.id); return NextResponse.json({ ok: true });
 }
