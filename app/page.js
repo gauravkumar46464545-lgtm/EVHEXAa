@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Media from "@/components/Media";
 import { Instagram, Facebook, Youtube, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
@@ -107,7 +107,7 @@ export default function Home() {
         </section>
 
         <ReviewSection reviews={reviews} onAdded={(r) => setReviews([r, ...reviews])} />
-        {pw && <AdminPanel pw={pw} articles={articles} onDone={load} />}
+        {pw && <AdminPanel pw={pw} articles={articles} features={features} onDone={load} />}
       </main>
 
       {showLogin && <Login onClose={() => setShowLogin(false)} onOk={(p) => { setPw(p); setShowLogin(false); goAdmin(); }} />}
@@ -185,43 +185,64 @@ function MediaPick({ obj, set, pw, setNote, field, label }) {
     {field === "media" && obj.media && <div className="mt-2 w-48 overflow-hidden rounded"><Media src={obj.media} type={obj.mediaType} /></div>}</div>);
 }
 
-function AdminPanel({ pw, articles, onDone }) {
+function AdminPanel({ pw, articles, features, onDone }) {
   const E1 = { title: "", badge: "", description: "", media: "", mediaType: "" }, E2 = { title: "", author: "", image: "", content: "", metaDescription: "" };
-  const [fe, setFe] = useState(E1); const [ar, setAr] = useState(E2); const [editId, setEditId] = useState(null); const [note, setNote] = useState("");
-  const run = async (fn, ok) => { try { await fn(); setNote(ok); onDone(); } catch (x) { setNote(x.message); } };
-  const addFeature = (e) => { e.preventDefault(); run(async () => { await post("/api/features", fe, pw); setFe(E1); }, "Feature added."); };
+  const [fe, setFe] = useState(E1); const [ar, setAr] = useState(E2);
+  const [editF, setEditF] = useState(null); const [editA, setEditA] = useState(null);
+  const [note, setNote] = useState(""); const [busy, setBusy] = useState(false); const lock = useRef(false);
+  // Only the first tap runs; every further tap is ignored until the request finishes.
+  const run = async (fn, ok) => {
+    if (lock.current) return; lock.current = true; setBusy(true);
+    try { await fn(); setNote(ok); await onDone(); } catch (x) { setNote(x.message); } finally { lock.current = false; setBusy(false); }
+  };
+  const saveFeature = (e) => { e.preventDefault(); run(async () => {
+    if (editF) await api(`/api/features/${editF}`, { method: "PUT", body: JSON.stringify(fe) }, pw); else await post("/api/features", fe, pw);
+    setFe(E1); setEditF(null); }, editF ? "Feature updated." : "Feature added."); };
   const saveArticle = (e) => { e.preventDefault(); run(async () => {
-    if (editId) await api(`/api/articles/${editId}`, { method: "PUT", body: JSON.stringify(ar) }, pw); else await post("/api/articles", ar, pw);
-    setAr(E2); setEditId(null); }, editId ? "Article updated." : "Article published."); };
-  const startEdit = (a) => { setEditId(a._id); setAr({ title: a.title, author: a.author, image: a.image || "", content: a.content, metaDescription: a.metaDescription || "" }); document.getElementById("articleForm")?.scrollIntoView({ behavior: "smooth" }); };
-  const del = (a) => { if (confirm(`Delete "${a.title}"?`)) run(() => api(`/api/articles/${a._id}`, { method: "DELETE" }, pw), "Article deleted."); };
+    if (editA) await api(`/api/articles/${editA}`, { method: "PUT", body: JSON.stringify(ar) }, pw); else await post("/api/articles", ar, pw);
+    setAr(E2); setEditA(null); }, editA ? "Article updated." : "Article published."); };
+  const startEditF = (f) => { setEditF(f._id); setFe({ title: f.title, badge: f.badge, description: f.description, media: f.media || "", mediaType: f.mediaType || "" }); document.getElementById("featureForm")?.scrollIntoView({ behavior: "smooth" }); };
+  const startEditA = (a) => { setEditA(a._id); setAr({ title: a.title, author: a.author, image: a.image || "", content: a.content, metaDescription: a.metaDescription || "" }); document.getElementById("articleForm")?.scrollIntoView({ behavior: "smooth" }); };
+  const delF = (f) => { if (!lock.current && confirm(`Delete feature "${f.title}"?`)) run(() => api(`/api/features/${f._id}`, { method: "DELETE" }, pw), "Feature deleted."); };
+  const delA = (a) => { if (!lock.current && confirm(`Delete article "${a.title}"?`)) run(() => api(`/api/articles/${a._id}`, { method: "DELETE" }, pw), "Article deleted."); };
+  const List = ({ items, onEdit, onDel }) => (
+    <ul className="mt-3 space-y-2">{items.map((x) => (
+      <li key={x._id} className="flex items-center justify-between gap-3 rounded-lg border border-[#16222d] bg-panel px-4 py-3">
+        <span className="min-w-0 truncate text-sm">{x.title} <span className="text-xs text-slate-500">· {fmt(x.createdAt).replace("Posted on: ", "")}</span></span>
+        <span className="flex shrink-0 gap-2"><button disabled={busy} onClick={() => onEdit(x)} className="rounded border border-[#1c2a37] px-3 py-1 text-sm hover:border-volt disabled:opacity-40">Edit</button>
+          <button disabled={busy} onClick={() => onDel(x)} className="rounded border border-red-500/40 px-3 py-1 text-sm text-red-400 disabled:opacity-40">Delete</button></span></li>))}</ul>);
+  const Cancel = ({ on }) => <button type="button" disabled={busy} onClick={on} className="rounded-lg border border-[#1c2a37] px-4">Cancel</button>;
   return (
     <section id="admin" className="mx-auto max-w-6xl px-4 py-14">
       <h2 className="font-display text-3xl font-semibold">Admin panel</h2>
-      {note && <p className="mt-2 text-sm text-hexa">{note}</p>}
+      {note && <p className="mt-2 text-sm text-hexa" role="status">{note}</p>}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <form onSubmit={addFeature} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
-          <h3 className="font-display text-xl font-semibold">Add feature (photo or video)</h3>
-          <input className="inp" placeholder="Feature title" value={fe.title} onChange={(e) => setFe({ ...fe, title: e.target.value })} required />
-          <input className="inp" placeholder="Category or spec badge (e.g. 520 km range)" value={fe.badge} onChange={(e) => setFe({ ...fe, badge: e.target.value })} required />
-          <textarea className="inp" rows={3} placeholder="Description" value={fe.description} onChange={(e) => setFe({ ...fe, description: e.target.value })} required />
-          <MediaPick obj={fe} set={setFe} pw={pw} setNote={setNote} field="media" label="Photo / video URL (mp4 or YouTube link), or upload a file" /><button className="btn">Add feature</button></form>
-        <form id="articleForm" onSubmit={saveArticle} className="space-y-3 rounded-xl border border-[#16222d] bg-panel p-5">
-          <h3 className="font-display text-xl font-semibold">{editId ? "Edit article" : "Publish article"}</h3>
-          <input className="inp" placeholder="Article title" value={ar.title} onChange={(e) => setAr({ ...ar, title: e.target.value })} required />
-          <input className="inp" placeholder="Author" value={ar.author} onChange={(e) => setAr({ ...ar, author: e.target.value })} required />
-          <textarea className="inp" rows={5} placeholder="Content (blank line = new paragraph; table rows: Col A | Col B | Col C)" value={ar.content} onChange={(e) => setAr({ ...ar, content: e.target.value })} required />
-          <input className="inp" maxLength={160} placeholder="SEO meta description (optional, up to 160 characters)" value={ar.metaDescription} onChange={(e) => setAr({ ...ar, metaDescription: e.target.value })} />
-          <MediaPick obj={ar} set={setAr} pw={pw} setNote={setNote} field="image" label="Banner image URL (or upload a file)" />
-          <div className="flex gap-2"><button className="btn">{editId ? "Save changes" : "Publish article"}</button>
-            {editId && <button type="button" onClick={() => { setEditId(null); setAr(E2); }} className="rounded-lg border border-[#1c2a37] px-4">Cancel</button>}</div></form>
+        <form id="featureForm" onSubmit={saveFeature} aria-busy={busy} className="rounded-xl border border-[#16222d] bg-panel p-5">
+          <fieldset disabled={busy} className="space-y-3 disabled:opacity-60">
+            <h3 className="font-display text-xl font-semibold">{editF ? "Edit feature" : "Add feature (photo or video)"}</h3>
+            <input className="inp" placeholder="Feature title" value={fe.title} onChange={(e) => setFe({ ...fe, title: e.target.value })} required />
+            <input className="inp" placeholder="Category or spec badge (e.g. 520 km range)" value={fe.badge} onChange={(e) => setFe({ ...fe, badge: e.target.value })} required />
+            <textarea className="inp" rows={3} placeholder="Description" value={fe.description} onChange={(e) => setFe({ ...fe, description: e.target.value })} required />
+            <MediaPick obj={fe} set={setFe} pw={pw} setNote={setNote} field="media" label="Photo / video URL (mp4 or YouTube link), or upload a file" />
+            <div className="flex gap-2"><button className="btn disabled:cursor-not-allowed">{busy ? "Please wait…" : editF ? "Save changes" : "Add feature"}</button>
+              {editF && <Cancel on={() => { setEditF(null); setFe(E1); }} />}</div>
+          </fieldset></form>
+        <form id="articleForm" onSubmit={saveArticle} aria-busy={busy} className="rounded-xl border border-[#16222d] bg-panel p-5">
+          <fieldset disabled={busy} className="space-y-3 disabled:opacity-60">
+            <h3 className="font-display text-xl font-semibold">{editA ? "Edit article" : "Publish article"}</h3>
+            <input className="inp" placeholder="Article title" value={ar.title} onChange={(e) => setAr({ ...ar, title: e.target.value })} required />
+            <input className="inp" placeholder="Author" value={ar.author} onChange={(e) => setAr({ ...ar, author: e.target.value })} required />
+            <textarea className="inp" rows={5} placeholder="Content (blank line = new paragraph; table rows: Col A | Col B | Col C)" value={ar.content} onChange={(e) => setAr({ ...ar, content: e.target.value })} required />
+            <input className="inp" maxLength={160} placeholder="SEO meta description (optional, up to 160 characters)" value={ar.metaDescription} onChange={(e) => setAr({ ...ar, metaDescription: e.target.value })} />
+            <MediaPick obj={ar} set={setAr} pw={pw} setNote={setNote} field="image" label="Banner image URL (or upload a file)" />
+            <div className="flex gap-2"><button className="btn disabled:cursor-not-allowed">{busy ? "Please wait…" : editA ? "Save changes" : "Publish article"}</button>
+              {editA && <Cancel on={() => { setEditA(null); setAr(E2); }} />}</div>
+          </fieldset></form>
       </div>
-      <h3 className="mt-10 font-display text-xl font-semibold">Manage published articles</h3>
-      <ul className="mt-3 space-y-2">{articles.map((a) => (
-        <li key={a._id} className="flex items-center justify-between gap-3 rounded-lg border border-[#16222d] bg-panel px-4 py-3">
-          <span className="min-w-0 truncate text-sm">{a.title} <span className="text-xs text-slate-500">· {fmt(a.createdAt).replace("Posted on: ", "")}</span></span>
-          <span className="flex shrink-0 gap-2"><button onClick={() => startEdit(a)} className="rounded border border-[#1c2a37] px-3 py-1 text-sm hover:border-volt">Edit</button>
-            <button onClick={() => del(a)} className="rounded border border-red-500/40 px-3 py-1 text-sm text-red-400">Delete</button></span></li>))}</ul>
+      <div className="mt-10 grid gap-8 lg:grid-cols-2">
+        <div><h3 className="font-display text-xl font-semibold">Manage features</h3>{!features.length && <p className="mt-3 text-sm text-slate-500">No features yet.</p>}<List items={features} onEdit={startEditF} onDel={delF} /></div>
+        <div><h3 className="font-display text-xl font-semibold">Manage published articles</h3>{!articles.length && <p className="mt-3 text-sm text-slate-500">No articles yet.</p>}<List items={articles} onEdit={startEditA} onDel={delA} /></div>
+      </div>
     </section>);
 }
 
