@@ -60,7 +60,6 @@ export default function Home() {
             <a href="#articles" className="hidden hover:text-volt sm:block">Articles</a>
             <a href="#reviews" className="hidden hover:text-volt sm:block">Reviews</a>
             <ThemeMenu />
-            
           </div>
         </nav>
       </header>
@@ -98,7 +97,7 @@ export default function Home() {
           {!articles.length && <p className="mt-4 text-slate-500">No articles published yet.</p>}
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((a) => (
-              <Link key={a._id} href={`/articles/${a.slug}`} className="block overflow-hidden rounded-xl border border-[#16222d] bg-panel hover:border-volt">
+              <Link key={a._id} href={`/articles/${a.slug || a._id}`} className="block overflow-hidden rounded-xl border border-[#16222d] bg-panel hover:border-volt">
                 <Img src={a.image} alt={a.title} className="h-44 w-full object-cover" />
                 <div className="p-4"><h3 className="font-display text-xl font-semibold">{a.title}</h3>
                   <p className="mt-1 line-clamp-2 text-sm text-slate-400">{a.content}</p>
@@ -151,7 +150,6 @@ function Login({ onClose, onOk }) {
     </div>);
 }
 
-
 function ReviewSection({ reviews, onAdded }) {
   const [f, setF] = useState({ name: "", rating: 5, text: "" }); const [err, setErr] = useState("");
   const send = async (e) => { e.preventDefault(); try { onAdded(await post("/api/reviews", f)); setF({ name: "", rating: 5, text: "" }); setErr(""); } catch (x) { setErr(x.message); } };
@@ -196,7 +194,6 @@ function AdminPanel({ pw, articles, features, onDone }) {
   const [fe, setFe] = useState(E1); const [ar, setAr] = useState(E2);
   const [editF, setEditF] = useState(null); const [editA, setEditA] = useState(null);
   const [note, setNote] = useState(""); const [busy, setBusy] = useState(false); const lock = useRef(false);
-  // Only the first tap runs; every further tap is ignored until the request finishes.
   const run = async (fn, ok) => {
     if (lock.current) return; lock.current = true; setBusy(true);
     try { await fn(); setNote(ok); await onDone(); } catch (x) { setNote(x.message); } finally { lock.current = false; setBusy(false); }
@@ -259,7 +256,6 @@ function MovingCar() {
       <div className="car absolute bottom-4 left-0 w-60"><svg viewBox="0 0 240 80" width="240" height="80"><ellipse cx="120" cy="74" rx="105" ry="4" fill="#000" opacity=".5"/><path d="M10 58 L10 46 Q10 40 18 38 L60 32 Q75 14 100 12 L150 12 Q172 14 188 32 L222 38 Q232 40 232 48 L232 58 Z" fill="#10e39a"/><path d="M72 32 Q82 19 102 18 L120 18 L120 32 Z M128 18 L150 18 Q164 20 176 32 L128 32 Z" fill="#0a2630"/><path d="M224 42 L232 44 L232 48 L224 48 Z" fill="#fff"/><path d="M8 46 L12 46 L12 50 L8 50 Z" fill="#ff7a1a"/><g><circle cx="56" cy="60" r="15" fill="#0b0f14" stroke="#19d3ff" strokeWidth="2"/><g className="wheel"><path d="M56 48 V72 M44 60 H68 M47 51 L65 69 M65 51 L47 69" stroke="#19d3ff" strokeWidth="1.5"/></g></g><g><circle cx="188" cy="60" r="15" fill="#0b0f14" stroke="#19d3ff" strokeWidth="2"/><g className="wheel"><path d="M188 48 V72 M176 60 H200 M179 51 L197 69 M197 51 L179 69" stroke="#19d3ff" strokeWidth="1.5"/></g></g></svg></div>
     </div>);
 }
-
 
 function HeroSlides() {
   return (
