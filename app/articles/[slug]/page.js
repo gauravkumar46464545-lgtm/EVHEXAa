@@ -5,6 +5,7 @@ import { Article } from "@/models";
 import { fmt, SITE } from "@/lib/fmt";
 import Body from "@/components/Body";
 import Engage from "@/components/Engage";
+import ThemeMenu from "@/components/ThemeMenu";
 export const revalidate = 60;
 const get = async (slug) => { await db(); const a = await Article.findOne({ slug }).lean(); return a ? JSON.parse(JSON.stringify(a)) : null; };
 const desc = (a) => a.metaDescription || a.content.replace(/\s+/g, " ").slice(0, 155);
@@ -27,7 +28,7 @@ export default async function ArticlePage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#16222d] bg-ink/90 px-4 py-3 backdrop-blur">
         <Link href="/#articles" className="rounded-lg border border-[#1c2a37] px-4 py-1.5 text-sm hover:border-volt">← Back</Link>
-        <Link href="/" className="font-display text-lg text-slate-400">EV HEXA</Link></div>
+        <div className="flex items-center gap-4"><Link href="/" className="font-display text-lg text-slate-400">EV HEXA</Link><ThemeMenu /></div></div>
       {a.image && <img src={a.image} alt={a.title} className="h-[260px] w-full object-cover md:h-[380px]" />}
       <article className="mx-auto max-w-4xl px-4 pb-16 pt-10">
         <h1 className="text-center font-display text-3xl font-semibold leading-tight md:text-5xl">{a.title}</h1>

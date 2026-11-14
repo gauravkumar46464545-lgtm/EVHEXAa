@@ -1,5 +1,6 @@
 import "./globals.css";
 import { SITE } from "@/lib/fmt";
+import Effects from "@/components/Effects";
 const title = "EV HEXA – EV news, launches & owner reviews";
 const description = "EV HEXA is an electric vehicle media platform: latest EV news, launches, charging guides and honest owner reviews from India.";
 export const metadata = {
@@ -13,7 +14,8 @@ export const metadata = {
 };
 const ld = { "@context": "https://schema.org", "@type": "Organization", name: "EV HEXA", url: SITE, logo: SITE + "/logo.png" };
 export default function RootLayout({ children }) {
-  return (<html lang="en"><body>
+  return (<html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.getItem("evh_theme")||"dark"}catch(e){document.documentElement.dataset.theme="dark"}` }} /></head><body>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+    <Effects />
     {children}</body></html>);
 }

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Media from "@/components/Media";
+import ThemeMenu from "@/components/ThemeMenu";
 import { Instagram, Facebook, Youtube, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
 
 const fmt = (d) => {
@@ -58,7 +59,8 @@ export default function Home() {
             <a href="#features" className="hidden hover:text-volt sm:block">Features</a>
             <a href="#articles" className="hidden hover:text-volt sm:block">Articles</a>
             <a href="#reviews" className="hidden hover:text-volt sm:block">Reviews</a>
-            <button onClick={() => (pw ? goAdmin() : setShowLogin(true))} className="btn flex items-center gap-1 !py-1.5"><Lock size={14} />{pw ? "Admin" : "Admin Login"}</button>
+            <ThemeMenu />
+            
           </div>
         </nav>
       </header>
@@ -125,7 +127,11 @@ export default function Home() {
               <li className="flex gap-2"><Mail size={16} />contact@evhexa.com</li>
               <li className="flex gap-2"><MapPin size={16} />Your office address, City, State, India</li></ul></div>
         </div>
-        <div className="border-t border-[#16222d] py-4 text-center text-sm text-slate-500">Developed by Nexworktech</div>
+        <div className="border-t border-[#16222d]"><div className="mx-auto grid max-w-6xl items-center gap-3 px-4 py-4 text-sm text-slate-500 md:grid-cols-3">
+          <span className="hidden md:block" />
+          <p className="text-center">Developed by Nexworktech</p>
+          <button onClick={() => (pw ? goAdmin() : setShowLogin(true))} className="flex items-center justify-center gap-1 justify-self-center rounded-lg border border-[#1c2a37] px-3 py-1.5 hover:border-volt hover:text-volt md:justify-self-end"><Lock size={14} />{pw ? "Admin Panel" : "Admin Login"}</button>
+        </div></div>
       </footer>
     </div>
   );
@@ -261,6 +267,6 @@ function HeroSlides() {
       {[1, 2, 3, 4, 5].map((n) => (
         <div key={n} className="slide" style={{ backgroundImage: `url(/hero/hero-${n}.svg)`, animationDelay: `${(n - 1) * 5}s` }} />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/70 to-ink/30" />
+      <div className="hero-ov absolute inset-0" />
     </div>);
 }
