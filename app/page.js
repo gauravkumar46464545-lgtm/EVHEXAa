@@ -261,7 +261,7 @@ function HeroSlides() {
   return (
     <div className="absolute inset-0" aria-hidden="true">
       {[1, 2, 3, 4, 5].map((n) => (
-        <div key={n} className="slide" style={{ backgroundImage: `url(/hero/hero-${n}.svg)`, animationDelay: `${(n - 1) * 5}s` }} />
+        <div key={n} className="slide" style={{ backgroundImage: `url(/hero/hero-${n}.${n === 4 ? "png" : "svg"})`, animationDelay: `${(n - 1) * 5}s` }} />
       ))}
       <div className="hero-ov absolute inset-0" />
     </div>);
