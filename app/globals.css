@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 @tailwind base;@tailwind components;@tailwind utilities;
-button:focus-visible,a:focus-visible{outline:2px solid #ff8a3d;outline-offset:2px}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
 body{background:#080a1c;color:#dbe6ee;font-family:Inter,sans-serif}
-.inp{width:100%;background:#080a1c;border:1px solid #36275f;border-radius:.5rem;padding:.6rem .8rem;outline:none}.inp:focus{border-color:#b26bff}
+.inp{width:100%;background:#080a1c;border:1px solid #36275f;border-radius:.5rem;padding:.6rem .8rem;outline:none}
+.inp:focus{border-color:#b26bff}
 .btn{background:linear-gradient(90deg,#b26bff,#ff8a3d);color:#041016;font-weight:600;border-radius:.5rem;padding:.55rem 1.1rem}
-@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(300%)}}.sweep{animation:sweep 4s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.sweep{animation:none}}
+button:focus-visible,a:focus-visible{outline:2px solid #ff8a3d;outline-offset:2px}
+@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+.sweep{animation:sweep 4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.sweep{animation:none}}
+
 @keyframes drive{from{transform:translateX(-280px)}to{transform:translateX(100vw)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes road{from{background-position:0 0}to{background-position:-80px 0}}
@@ -51,20 +53,21 @@ html[data-theme="light"] .road{opacity:.8}
 html[data-theme="light"] .intro{background:rgba(247,244,252,.45)}
 @media (prefers-reduced-motion:reduce){.intro{display:none}.tap-blur{animation:none}}
 
+/* photo car (replaces the drawn green car) */
 @keyframes driveP{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
 @keyframes introDrive{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
 
 /* realistic car rig: photo body + exactly-fitted spinning wheels + soft night lights */
 .rig{position:relative;aspect-ratio:557/166;animation:bob 1.2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-1px)}}
-.rig-body,.rig-refl{position:absolute;inset:0;background:url(/art/car-body.png) center/100% 100% no-repeat}
+.rig-body,.rig-refl{position:absolute;inset:0;background:url(/car.png) center/100% 100% no-repeat}
 .rig-body{filter:drop-shadow(0 5px 8px rgba(0,0,0,.55))}
 .rig-refl{top:94%;transform:scaleY(-1);opacity:.32;filter:blur(1.2px);-webkit-mask-image:linear-gradient(to top,#000,transparent 60%);mask-image:linear-gradient(to top,#000,transparent 60%)}
 .rig-shadow{position:absolute;left:3%;width:94%;bottom:-2%;height:10%;background:radial-gradient(ellipse at center,rgba(0,0,0,.8),transparent 70%);filter:blur(4px)}
 .rig-trail{position:absolute;right:97%;top:46%;width:60%;height:5%;border-radius:6px;background:linear-gradient(to left,rgba(178,107,255,.5),rgba(255,138,61,.2) 40%,transparent);filter:blur(3px)}
 .whl{position:absolute;aspect-ratio:1;border-radius:50%;background-size:100% 100%;animation:spin .8s linear infinite;will-change:transform}
-.whl-f{left:70.621%;top:44.312%;width:14.051%;background-image:url(/art/wheel-front.png)}
-.whl-r{left:11.162%;top:42.874%;width:14.272%;background-image:url(/art/wheel-rear.png)}
+.whl-f{left:70.621%;top:44.312%;width:14.051%;background-image:url(/wheel-f.png)}
+.whl-r{left:11.162%;top:42.874%;width:14.272%;background-image:url(/wheel-r.png)}
 .rig-beam{position:absolute;left:92.59%;top:48.43%;width:95%;aspect-ratio:5/1;transform:translateY(-40%) rotate(3deg);transform-origin:0 50%;background:radial-gradient(ellipse 100% 55% at 0% 50%,rgba(255,244,214,.62),rgba(255,244,214,.2) 40%,transparent 72%);-webkit-mask-image:linear-gradient(90deg,#000 10%,transparent 100%);mask-image:linear-gradient(90deg,#000 10%,transparent 100%);filter:blur(5px);mix-blend-mode:screen;opacity:0;transition:opacity .6s}
 .rig-pool{position:absolute;left:92.59%;bottom:-5%;width:75%;height:14%;border-radius:50%;background:radial-gradient(ellipse at 15% 50%,rgba(255,236,190,.55),rgba(255,236,190,.16) 45%,transparent 72%);filter:blur(4px);mix-blend-mode:screen;opacity:0;transition:opacity .6s}
 .rig-hl,.rig-tl{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:0;transition:opacity .6s}
@@ -95,15 +98,15 @@ html[data-theme="light"] .slide{display:none}
 .day-sunwrap{position:absolute;right:10%;top:6%;width:clamp(90px,12vw,170px);aspect-ratio:1}
 .day-sun{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0,#fffbe0 22%,rgba(255,228,140,.85) 42%,rgba(255,205,100,.3) 62%,transparent 72%);animation:sunPulse 6s ease-in-out infinite}
 .day-rays{position:absolute;inset:-250%;border-radius:50%;background:repeating-conic-gradient(rgba(255,244,190,.24) 0 4deg,transparent 4deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 66%);mask-image:radial-gradient(circle,#000 8%,transparent 66%);animation:raysSpin 140s linear infinite}
-.day-cloud{position:absolute;left:0;background:url(/art/cloud.svg) center/contain no-repeat;animation:cloudDrift linear infinite;will-change:transform}
+.day-cloud{position:absolute;left:0;background:url(/day/cloud.svg) center/contain no-repeat;animation:cloudDrift linear infinite;will-change:transform}
 .day-cloud.c1{top:6%;width:320px;height:128px;opacity:.92;animation-duration:120s;animation-delay:-30s}
 .day-cloud.c2{top:17%;width:220px;height:88px;opacity:.72;animation-duration:170s;animation-delay:-100s}
 .day-cloud.c3{top:28%;width:380px;height:152px;opacity:.8;animation-duration:140s;animation-delay:-70s}
 .day-cloud.c4{top:3%;width:180px;height:72px;opacity:.6;animation-duration:200s;animation-delay:-150s}
 .day-far,.day-near,.day-trees{position:absolute;left:0;right:0;background-repeat:repeat-x;background-position:0 100%;animation:scrollBg linear infinite}
-.day-far{bottom:94px;height:210px;background-image:url(/art/hills-far.svg);background-size:1600px 210px;animation-duration:120s}
-.day-near{bottom:94px;height:150px;background-image:url(/art/hills-near.svg);background-size:1600px 150px;animation-duration:55s}
-.day-trees{bottom:92px;height:100px;background-image:url(/art/trees.svg);background-size:1600px 100px;animation-duration:14s;filter:drop-shadow(0 2px 2px rgba(10,50,30,.25))}
+.day-far{bottom:94px;height:210px;background-image:url(/day/far.svg);background-size:1600px 210px;animation-duration:120s}
+.day-near{bottom:94px;height:150px;background-image:url(/day/near.svg);background-size:1600px 150px;animation-duration:55s}
+.day-trees{bottom:92px;height:100px;background-image:url(/day/trees.svg);background-size:1600px 100px;animation-duration:14s;filter:drop-shadow(0 2px 2px rgba(10,50,30,.25))}
 @keyframes cloudDrift{from{transform:translateX(-30vw)}to{transform:translateX(125vw)}}
 @keyframes raysSpin{to{transform:rotate(360deg)}}
 @keyframes sunPulse{50%{transform:scale(1.06);filter:brightness(1.06)}}

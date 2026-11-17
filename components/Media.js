@@ -35,7 +35,7 @@ function YouTube({ id, alt, className }) {
 }
 
 export default function Media({ src, type, alt = "", className = "h-28 w-full" }) {
-  if (!src) return <div className={className + " bg-gradient-to-br from-panel to-[#12303a]"} />;
+  if (!src) return <div className={className + " bg-gradient-to-br from-panel to-[#2a1250]"} />;
   const y = ytId(src);
   if (y) return <YouTube id={y} alt={alt} className={className} />;
   if (type === "video" || /\.(mp4|webm|ogg)(\?|$)/i.test(src)) return <FileVideo src={src} className={className} />;

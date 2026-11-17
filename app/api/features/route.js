@@ -1,5 +1,9 @@
-import { isAdmin } from "@/lib/db";
-import { listFeatures, createFeature, readBody, needAdmin, respond } from "@/lib/store";
-export const dynamic = "force-dynamic";
-export const GET = () => respond(listFeatures);
-export const POST = (req) => respond(async () => { needAdmin(req, isAdmin); return createFeature(await readBody(req)); });
+import { NextResponse } from "next/server";
+import { db, isAdmin } from "@/lib/db";
+import { Feature } from "@/models";
+export async function GET() { await db(); return NextResponse.json(await Feature.find().sort({ createdAt: -1 }).lean()); }
+export async function POST(req) {
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  await db(); const { title, badge, description, media, mediaType } = await req.json();
+  return NextResponse.json(await Feature.create({ title, badge, description, media, mediaType }));
+}

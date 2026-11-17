@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { MoreVertical, Moon, Sun, Check } from "lucide-react";
+import { MoreVertical, Moon, Sun } from "lucide-react";
 
 const OPTIONS = [
-  { id: "dark", label: "Dark (Night)", Icon: Moon },
-  { id: "light", label: "Light (Day)", Icon: Sun },
+  { id: "dark", label: "Dark", Icon: Moon },
+  { id: "light", label: "Light", Icon: Sun },
 ];
 
 export default function ThemeMenu() {
@@ -24,14 +24,11 @@ export default function ThemeMenu() {
   };
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(!open)} aria-label="Menu" aria-haspopup="menu" aria-expanded={open} className="rounded-lg border border-[#1c2a37] p-2 hover:border-volt"><MoreVertical size={18} /></button>
+      <button onClick={() => setOpen(!open)} aria-label="Menu" aria-haspopup="menu" aria-expanded={open} className="rounded-lg border border-[#36275f] p-2 hover:border-volt"><MoreVertical size={18} /></button>
       {open && (
-        <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-[#1c2a37] bg-panel p-2 shadow-xl">
-          <p className="px-3 py-1 text-xs uppercase tracking-wide text-slate-500">Appearance</p>
+        <div role="menu" aria-label="Appearance" className="absolute right-0 top-full z-50 mt-2 flex gap-1 rounded-xl border border-[#36275f] bg-panel p-1.5 shadow-xl">
           {OPTIONS.map(({ id, label, Icon }) => (
-            <button key={id} role="menuitemradio" aria-checked={theme === id} onClick={() => pick(id)}
-              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-hexa/10 ${theme === id ? "text-hexa" : ""}`}>
-              <Icon size={16} />{label}{theme === id && <Check size={16} className="ml-auto" />}</button>))}
+            <button key={id} role="menuitemradio" aria-checked={theme === id} aria-label={label} onClick={() => pick(id)} className="tbtn grid h-10 w-10 place-items-center rounded-lg"><Icon size={18} /></button>))}
         </div>)}
     </div>);
 }

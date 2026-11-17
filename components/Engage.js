@@ -24,8 +24,8 @@ export default function Engage({ initial }) {
   return (
     <section>
       <div className="mt-8 flex gap-3">
-        <button onClick={() => vote("like")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${v === "like" ? "border-hexa text-hexa" : "border-[#1c2a37]"}`}><ThumbsUp size={16} />{a.likes}</button>
-        <button onClick={() => vote("dislike")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${v === "dislike" ? "border-red-400 text-red-400" : "border-[#1c2a37]"}`}><ThumbsDown size={16} />{a.dislikes}</button>
+        <button onClick={() => vote("like")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${v === "like" ? "border-hexa text-hexa" : "border-[#36275f]"}`}><ThumbsUp size={16} />{a.likes}</button>
+        <button onClick={() => vote("dislike")} className={`flex items-center gap-2 rounded-lg border px-4 py-2 ${v === "dislike" ? "border-red-400 text-red-400" : "border-[#36275f]"}`}><ThumbsDown size={16} />{a.dislikes}</button>
       </div>
       {err && <p className="mt-2 text-sm text-red-400" role="alert">{err}</p>}
       <h2 className="mt-8 font-display text-xl font-semibold">Comments ({a.comments.length})</h2>
@@ -34,7 +34,7 @@ export default function Engage({ initial }) {
         <textarea className="inp" rows={3} placeholder="Write a comment" value={text} onChange={(e) => setText(e.target.value)} required />
         <button className="btn">Post comment</button></form>
       <ul className="mt-4 space-y-3">{[...a.comments].reverse().map((c, i) => (
-        <li key={i} className="rounded-lg border border-[#16222d] p-3"><p className="text-sm font-medium text-volt">{c.name}</p>
+        <li key={i} className="rounded-lg border border-[#251a45] p-3"><p className="text-sm font-medium text-volt">{c.name}</p>
           <p className="text-sm text-slate-300">{c.text}</p><p className="mt-1 text-xs text-slate-500">{fmt(c.createdAt).replace("Posted on: ", "")}</p></li>))}</ul>
     </section>);
 }
