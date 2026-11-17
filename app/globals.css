@@ -148,3 +148,5 @@ html[data-theme="light"] .rig-trail{display:none}
 @media (prefers-reduced-motion:reduce){.day-cloud,.day-rays,.day-sun,.day-far,.day-near,.day-trees{animation:none}}
 
 html[data-theme="light"] [class*="from-panel"]{--tw-gradient-from:#eaf4ff;--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to,#cfe5fb)}
+
+.intro-wrap{position:absolute;left:0;top:50%;transform:translateY(-50%)}

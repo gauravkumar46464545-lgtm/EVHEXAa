@@ -21,7 +21,7 @@ export default function Effects() {
   if (!intro) return null;
   return (
     <div className="intro" aria-hidden="true">
-      <div className="absolute left-0 top-1/2 -translate-y-1/2">
+      <div className="intro-wrap">
         <div className="intro-car"><CarRig className="intro-rig" /></div>
       </div>
     </div>);

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 const { Schema, models, model } = mongoose;
+if (process.env.NODE_ENV !== "production") for (const n of ["Feature", "Article", "Review"]) delete models[n];
 export const Feature = models.Feature || model("Feature", new Schema(
   { title: String, badge: String, description: String, media: String, mediaType: String }, { timestamps: true }));
 export const Article = models.Article || model("Article", new Schema({

@@ -1,1 +1,1 @@
-module.exports={content:["./app/**/*.{js,jsx}"],theme:{extend:{colors:{volt:"#b26bff",hexa:"#ff8a3d",ink:"#080a1c",panel:"#120f2a"},fontFamily:{display:["Rajdhani","sans-serif"],body:["Inter","sans-serif"]}}},plugins:[]};
+module.exports={content:["./app/**/*.{js,jsx}","./components/**/*.{js,jsx}","./lib/**/*.{js,jsx}"],theme:{extend:{colors:{volt:"#b26bff",hexa:"#ff8a3d",ink:"#080a1c",panel:"#120f2a"},fontFamily:{display:["Rajdhani","sans-serif"],body:["Inter","sans-serif"]}}},plugins:[]};

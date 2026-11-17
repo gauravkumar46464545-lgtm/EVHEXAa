@@ -7,7 +7,13 @@ import Body from "@/components/Body";
 import Engage from "@/components/Engage";
 import ThemeMenu from "@/components/ThemeMenu";
 export const revalidate = 60;
-const get = async (slug) => { await db(); const a = await Article.findOne({ slug }).lean(); return a ? JSON.parse(JSON.stringify(a)) : null; };
+const get = async (key) => {
+  await db();
+  let a = await Article.findOne({ slug: key }).lean();
+  if (!a && /^[a-f\d]{24}$/i.test(key)) a = await Article.findById(key).lean();
+  if (a && !a.slug) a.slug = String(a._id);
+  return a ? JSON.parse(JSON.stringify(a)) : null;
+};
 const desc = (a) => a.metaDescription || a.content.replace(/\s+/g, " ").slice(0, 155);
 export async function generateMetadata({ params }) {
   const a = await get(params.slug); if (!a) return {};

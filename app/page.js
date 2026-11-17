@@ -99,7 +99,7 @@ export default function Home() {
           {!articles.length && <p className="mt-4 text-slate-500">No articles published yet.</p>}
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((a) => (
-              <Link key={a._id} href={`/articles/${a.slug}`} className="block overflow-hidden rounded-xl border border-[#251a45] bg-panel hover:border-volt">
+              <Link key={a._id} href={`/articles/${a.slug || a._id}`} className="block overflow-hidden rounded-xl border border-[#251a45] bg-panel hover:border-volt">
                 <Img src={a.image} alt={a.title} className="h-44 w-full object-cover" />
                 <div className="p-4"><h3 className="font-display text-xl font-semibold">{a.title}</h3>
                   <p className="mt-1 line-clamp-2 text-sm text-slate-400">{a.content}</p>
