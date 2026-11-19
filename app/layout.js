@@ -12,7 +12,9 @@ export const metadata = {
   twitter: { card: "summary_large_image", title, description, images: ["/logo.png"] },
   robots: { index: true, follow: true }, icons: { icon: "/logo.png" },
 };
-const ld = { "@context": "https://schema.org", "@type": "Organization", name: "EV HEXA", url: SITE, logo: SITE + "/logo.png" };
+const ld = { "@context": "https://schema.org", "@type": "Organization", name: "EV HEXA", url: SITE, logo: SITE + "/logo.png",
+  address: { "@type": "PostalAddress", streetAddress: "Flat No. D-58, 12M-3-8, Gandhinagar, Sigra", addressLocality: "Varanasi", addressRegion: "Uttar Pradesh", postalCode: "221010", addressCountry: "IN" },
+  sameAs: ["https://www.instagram.com/evhexa.it/", "https://www.youtube.com/@EVHEXA"] };
 export default function RootLayout({ children }) {
   return (<html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.getItem("evh_theme")||"dark"}catch(e){document.documentElement.dataset.theme="dark"}` }} /></head><body>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />

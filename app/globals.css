@@ -150,3 +150,38 @@ html[data-theme="light"] .rig-trail{display:none}
 html[data-theme="light"] [class*="from-panel"]{--tw-gradient-from:#eaf4ff;--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to,#cfe5fb)}
 
 .intro-wrap{position:absolute;left:0;top:50%;transform:translateY(-50%)}
+
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.35);box-shadow:none}
+
+/* ===== EV sections ===== */
+.bleed{margin-right:calc(50% - 50vw);padding-right:calc(50vw - 50%)}
+.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}
+.nav-arrow{position:absolute;top:42%;display:none;height:2.5rem;width:2.5rem;place-items:center;border-radius:9999px;border:1px solid #36275f;background:#120f2a;box-shadow:0 6px 18px rgba(0,0,0,.4);z-index:5}
+@media (min-width:768px){.nav-arrow{display:grid}}
+.nav-arrow:hover{border-color:#b26bff}
+.finder{position:relative;border-radius:1.25rem;border:1px solid #36275f;background:linear-gradient(135deg,rgba(178,107,255,.18),rgba(255,138,61,.08) 60%,transparent),#120f2a;box-shadow:0 0 0 1px rgba(178,107,255,.1),0 24px 60px rgba(0,0,0,.35)}
+.arch{border-radius:110px 110px 16px 16px/90px 90px 16px 16px;background:radial-gradient(ellipse at 50% 100%,rgba(178,107,255,.5),transparent 65%),linear-gradient(#1d1544,#120f2a);border:1px solid #251a45;overflow:visible}
+.arch-sm{border-radius:70px 70px 12px 12px/60px 60px 12px 12px;background:radial-gradient(ellipse at 50% 100%,rgba(255,138,61,.35),transparent 65%),linear-gradient(#1d1544,#120f2a);border:1px solid #251a45}
+.vs-badge{background:linear-gradient(135deg,#b26bff,#ff8a3d);color:#1a0b2e;box-shadow:0 0 0 4px #120f2a}
+.news-banner{background:linear-gradient(135deg,rgba(178,107,255,.12),transparent 55%),#120f2a}
+.news-callout{background:linear-gradient(145deg,#b26bff,#ff8a3d);color:#1a0b2e}
+.live-dot{height:8px;width:8px;border-radius:50%;background:#1a0b2e;animation:pulseDot 1.4s ease-in-out infinite}
+@keyframes pulseDot{50%{transform:scale(1.6);opacity:.4}}
+html[data-theme="light"] .nav-arrow{background:#fff;border-color:#b9d1ea;box-shadow:0 6px 18px rgba(30,110,200,.18)}
+html[data-theme="light"] .finder{border-color:#b9d1ea;background:linear-gradient(135deg,rgba(43,155,255,.14),rgba(255,179,71,.14) 70%),#fff;box-shadow:0 20px 50px rgba(30,110,200,.15)}
+html[data-theme="light"] .arch,html[data-theme="light"] .arch-sm{background:radial-gradient(ellipse at 50% 100%,rgba(255,179,71,.55),transparent 65%),linear-gradient(#cfe8ff,#eef7ff);border-color:#cfe0f3}
+html[data-theme="light"] .vs-badge{background:linear-gradient(135deg,#2b9bff,#ffb347);color:#07203f;box-shadow:0 0 0 4px #fff}
+html[data-theme="light"] .news-banner{background:linear-gradient(135deg,rgba(43,155,255,.12),transparent 55%),#fff;border-color:#b9d1ea}
+html[data-theme="light"] .news-callout{background:linear-gradient(145deg,#2b9bff,#ffb347);color:#07203f}
+html[data-theme="light"] .live-dot{background:#07203f}
+@media (prefers-reduced-motion:reduce){.live-dot{animation:none}}
+
+/* ===== compact hero (about half the old height) ===== */
+.hero-rig{width:clamp(220px,26vw,380px)}
+.hero-road{height:64px}
+.day-far{bottom:62px;height:130px;background-size:990px 130px;animation-name:scrollFar}
+.day-near{bottom:62px;height:90px;background-size:960px 90px;animation-name:scrollNear}
+.day-trees{bottom:60px;height:60px;background-size:960px 60px;animation-name:scrollTrees}
+@keyframes scrollFar{to{background-position-x:-990px}}
+@keyframes scrollNear{to{background-position-x:-960px}}
+@keyframes scrollTrees{to{background-position-x:-960px}}

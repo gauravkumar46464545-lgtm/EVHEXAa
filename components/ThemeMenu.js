@@ -24,7 +24,7 @@ export default function ThemeMenu() {
   };
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(!open)} aria-label="Menu" aria-haspopup="menu" aria-expanded={open} className="rounded-lg border border-[#36275f] p-2 hover:border-volt"><MoreVertical size={18} /></button>
+      <button onClick={() => setOpen(!open)} aria-label="Menu" aria-haspopup="menu" aria-expanded={open} className="rounded-lg border border-[#36275f] p-2.5 hover:border-volt"><MoreVertical size={22} /></button>
       {open && (
         <div role="menu" aria-label="Appearance" className="absolute right-0 top-full z-50 mt-2 flex gap-1 rounded-xl border border-[#36275f] bg-panel p-1.5 shadow-xl">
           {OPTIONS.map(({ id, label, Icon }) => (

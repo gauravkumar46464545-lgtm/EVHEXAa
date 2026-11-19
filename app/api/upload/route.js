@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { isAdmin } from "@/lib/db";
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
+// Returns a short-lived signature so the browser can upload straight to Cloudinary
+// (real progress %, and no server body-size limit for large videos).
 export async function POST(req) {
   if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const file = (await req.formData()).get("file");
-  if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-  const buf = Buffer.from(await file.arrayBuffer());
-  const out = await new Promise((res, rej) =>
-    cloudinary.uploader.upload_stream({ folder: "ev-hexa", resource_type: "auto" }, (e, r) => (e ? rej(e) : res({ url: r.secure_url, type: r.resource_type }))).end(buf));
-  return NextResponse.json(out);
+  const timestamp = Math.round(Date.now() / 1000), folder = "ev-hexa";
+  const signature = cloudinary.utils.api_sign_request({ folder, timestamp }, process.env.CLOUDINARY_API_SECRET);
+  return NextResponse.json({ cloud: process.env.CLOUDINARY_CLOUD_NAME, key: process.env.CLOUDINARY_API_KEY, timestamp, signature, folder });
 }
