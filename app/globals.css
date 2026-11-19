@@ -185,3 +185,14 @@ html[data-theme="light"] .live-dot{background:#07203f}
 @keyframes scrollFar{to{background-position-x:-990px}}
 @keyframes scrollNear{to{background-position-x:-960px}}
 @keyframes scrollTrees{to{background-position-x:-960px}}
+/* Road ko static (ruka hua) rakhne ke liye */
+.road,
+.hero-road::before,
+.hero-road::after {
+  animation: none;
+}
+.day-far,
+.day-near,
+.day-trees {
+  animation: none;
+}
