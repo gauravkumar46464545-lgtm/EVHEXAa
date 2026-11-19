@@ -54,18 +54,13 @@ export default function Home() {
 
   return (
     <div>
-      <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
-          <a href="#top" aria-label="EV HEXA home" className="block h-[60px] w-[60px] overflow-hidden rounded-full"><img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" /></a>
-          <div className="flex items-center gap-6 text-[17.5px] font-semibold">
-            <a href="#news" className="hidden hover:text-volt sm:block">News</a>
-            <a href="#popular" className="hidden hover:text-volt sm:block">EVs</a>
-            <a href="#compare" className="hidden hover:text-volt md:block">Compare</a>
-            <a href="#features" className="hidden hover:text-volt sm:block">Features</a>
-            <a href="#articles" className="hidden hover:text-volt sm:block">Articles</a>
-            <a href="#reviews" className="hidden hover:text-volt sm:block">Reviews</a>
+          <a href="#top" aria-label="EV HEXA home" className="block h-[60px] w-[60px] overflow-hidden rounded-full">
+            <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+          </a>
+          <div className="flex items-center">
             <ThemeMenu />
-            
           </div>
         </nav>
       </header>
