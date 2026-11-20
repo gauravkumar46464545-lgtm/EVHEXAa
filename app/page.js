@@ -7,7 +7,39 @@ import { NewsBanner, EvShowcase, CompareEvs } from "@/components/EvSections";
 import ThemeMenu from "@/components/ThemeMenu";
 import FaqSection from "@/components/FaqSection";
 import FaqAdmin from "@/components/FaqAdmin";
-import { Instagram, Youtube, Facebook, Linkedin, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
+import { Instagram, Youtube, Facebook, Linkedin, Star, Phone, Mail, MapPin, Lock } from "lucide-react";
+
+/* ===== DIRECT HERO EV NEWS (Yahan apni 3–4 news seedha edit karein) ===== */
+const HERO_NEWS = [
+  {
+    tag: "BREAKING EV NEWS",
+    title: "Tata Harrier EV & Sierra EV India Launch Timeline Confirmed",
+    summary: "Dual-motor AWD aur 500+ km real-world range ke saath nayi SUV lineup jaldi aane wali hai.",
+    image: "/hero/hero-1.jpg",
+    link: "#articles",
+  },
+  {
+    tag: "CHARGING UPDATE",
+    title: "India Mein 25,000+ Naye Fast Charging Stations Ka Expansion",
+    summary: "National highways par 800V ultra-fast chargers lagne se long-distance EV travel aur aasan hoga.",
+    image: "/hero/hero-2.jpg",
+    link: "#articles",
+  },
+  {
+    tag: "NEW LAUNCH",
+    title: "Mahindra BE 6 & XEV 9e: Real-World Range & Owner Reviews",
+    summary: "Blade battery technology aur futuristic cabin ke saath highway test results saamne aaye.",
+    image: "/hero/hero-3.jpg",
+    link: "#reviews",
+  },
+  {
+    tag: "EV POLICY",
+    title: "PM E-DRIVE Scheme: Electric Scooters & Cars Par Naye Benefits",
+    summary: "Nayi EV kharidne par road tax waiver aur charging infrastructure subsidies jari rahengi.",
+    image: "/hero/hero-4.jpg",
+    link: "#news",
+  },
+];
 
 const fmt = (d) => {
   const x = new Date(d);
@@ -30,30 +62,16 @@ const Stars = ({ value, onPick }) => (
 
 export default function Home() {
   const [news, setNews] = useState([]); const [features, setFeatures] = useState([]); const [articles, setArticles] = useState([]); const [reviews, setReviews] = useState([]);
-  const [open, setOpen] = useState(null); const [pw, setPw] = useState(null); const [showLogin, setShowLogin] = useState(false);
-  const [votes, setVotes] = useState({}); const [msg, setMsg] = useState("");
+  const [pw, setPw] = useState(null); const [showLogin, setShowLogin] = useState(false);
+  const [msg, setMsg] = useState("");
   const [faqTick, setFaqTick] = useState(0);
 
   const load = async () => {
     const [f, a, r, n] = await Promise.all([api("/api/features"), api("/api/articles"), api("/api/reviews"), api("/api/news").catch(() => [])]);
     setFeatures(f); setArticles(a); setReviews(r); setNews(n);
   };
-  useEffect(() => { load().catch((e) => setMsg(e.message)); try { setVotes(JSON.parse(localStorage.getItem("evh_votes") || "{}")); } catch {} }, []);
-  const current = articles.find((a) => a._id === open);
-  const replace = (u) => setArticles((l) => l.map((a) => (a._id === u._id ? u : a)));
+  useEffect(() => { load().catch((e) => setMsg(e.message)); }, []);
   const goAdmin = () => setTimeout(() => document.getElementById("admin")?.scrollIntoView({ behavior: "smooth" }), 100);
-
-  const vote = async (a, type) => {
-    const prev = votes[a._id]; const next = { ...votes }; const url = `/api/articles/${a._id}`;
-    try {
-      if (prev === type) { replace(await post(url, { action: "un" + type })); delete next[a._id]; }
-      else {
-        if (prev) await post(url, { action: "un" + prev });
-        replace(await post(url, { action: type })); next[a._id] = type;
-      }
-      setVotes(next); localStorage.setItem("evh_votes", JSON.stringify(next));
-    } catch (e) { setMsg(e.message); }
-  };
 
   return (
     <div>
@@ -93,10 +111,16 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Navbar */}
+        {/* Main Navbar with Logo + EV HEXA Text */}
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
-          <a href="#top" aria-label="EV HEXA home" className="block h-[60px] w-[60px] overflow-hidden rounded-full">
-            <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+          <a href="#top" aria-label="EV HEXA home" className="flex items-center gap-3">
+            <span className="block h-[56px] w-[56px] shrink-0 overflow-hidden rounded-full border border-[#36275f]">
+              <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+            </span>
+            <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
+              <span>EV</span>
+              <span className="text-hexa">HEXA</span>
+            </span>
           </a>
           <div className="flex items-center">
             <ThemeMenu />
@@ -105,15 +129,9 @@ export default function Home() {
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden border-b border-[#251a45]">
-          <HeroSlides />
-          <MovingCar />
-          <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-8">
-            <h1 className="font-display text-4xl font-bold leading-[1.05] md:text-5xl">Every charge,<br className="md:hidden" /> every mile, <span className="text-volt">reviewed.</span></h1>
-            <p className="mt-3 max-w-xl text-base text-slate-400">EV HEXA covers electric vehicle news, launches and honest owner reviews.</p>
-            <div className="mt-5 flex gap-3"><a href="#articles" className="btn">Read latest articles</a><a href="#reviews" className="rounded-lg border border-[#36275f] px-5 py-2.5 hover:border-hexa">Write a review</a></div>
-          </div>
-        </section>
+        {/* Hero Section: Direct 3-sec Sliding EV News Board + Road & Car */}
+        <HeroNewsBoard />
+
         <NewsBanner news={news} admin={!!pw} onManage={goAdmin} />
         <EvShowcase />
 
@@ -160,15 +178,28 @@ export default function Home() {
 
       <footer id="contact" className="mt-10 border-t border-[#251a45] bg-panel">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
-          <div><div className="mb-4 h-16 w-16 overflow-hidden rounded-full"><img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" /></div><p className="font-display text-xl font-semibold">Follow EV HEXA</p>
-            <div className="mt-3 flex gap-4">
-              <a href="https://www.instagram.com/evhexa.it/" target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-full border border-[#36275f] p-3 hover:border-volt hover:text-volt"><Instagram /></a>
-              <a href="https://www.youtube.com/@EVHEXA" target="_blank" rel="noreferrer" aria-label="YouTube" className="rounded-full border border-[#36275f] p-3 hover:border-volt hover:text-volt"><Youtube /></a></div></div>
-          <div><p className="font-display text-xl font-semibold">Contact</p>
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="h-14 w-14 overflow-hidden rounded-full border border-[#36275f]">
+                <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+              </div>
+              <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
+                <span>EV</span>
+                <span className="text-hexa">HEXA</span>
+              </span>
+            </div>
+            <p className="mt-3 max-w-sm text-sm text-slate-400">
+              EV HEXA covers electric vehicle news, launches, charging updates and honest owner reviews from India.
+            </p>
+          </div>
+          <div>
+            <p className="font-display text-xl font-semibold">Contact</p>
             <ul className="mt-3 space-y-2 text-sm text-slate-400">
               <li className="flex gap-2"><Phone size={16} />+91 00000 00000</li>
               <li className="flex gap-2"><Mail size={16} />contact@evhexa.com</li>
-              <li className="flex gap-2"><MapPin size={16} />Flat No. D-58, 12M-3-8, Gandhinagar, Sigra, Varanasi, U.P.-221010</li></ul></div>
+              <li className="flex gap-2"><MapPin size={16} />Flat No. D-58, 12M-3-8, Gandhinagar, Sigra, Varanasi, U.P.-221010</li>
+            </ul>
+          </div>
         </div>
         <div className="border-t border-[#251a45]"><div className="mx-auto grid max-w-6xl items-center gap-3 px-4 py-4 text-sm text-slate-500 md:grid-cols-3">
           <span className="hidden md:block" />
@@ -177,6 +208,74 @@ export default function Home() {
         </div></div>
       </footer>
     </div>
+  );
+}
+
+/* ---------------- Hero EV News Slider (Car & Road As-Is) ---------------- */
+function HeroNewsBoard() {
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIdx((prev) => (prev + 1) % HERO_NEWS.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative overflow-hidden border-b border-[#251a45] bg-[#120f2a]">
+      {/* Sliding News Track */}
+      <div
+        className="flex transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateX(-${idx * 100}%)` }}
+      >
+        {HERO_NEWS.map((item, i) => (
+          <div
+            key={i}
+            className="relative w-full shrink-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${item.image})` }}
+          >
+            {/* Dark readable scrim so news text stays sharp in both Light & Dark modes */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/70 to-[#0e0b16]/35" />
+
+            <div className="relative z-10 mx-auto max-w-6xl px-4 pb-40 pt-8 md:pb-44 md:pt-10">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
+                {item.tag}
+              </span>
+              <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
+                {item.title}
+              </h1>
+              <p className="mt-2 max-w-xl text-sm text-slate-200 md:text-base">
+                {item.summary}
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <a href={item.link} className="btn">Read more</a>
+                <a href="#reviews" className="rounded-full border border-white/30 bg-black/30 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]">
+                  Write a review
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Slide Indicator Dots */}
+      <div className="absolute bottom-36 right-6 z-20 flex gap-2">
+        {HERO_NEWS.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setIdx(i)}
+            aria-label={`News slide ${i + 1}`}
+            className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/40 hover:bg-white/70"}`}
+          />
+        ))}
+      </div>
+
+      {/* Car & Road As-Is */}
+      <MovingCar />
+    </section>
   );
 }
 
@@ -352,19 +451,8 @@ function AdminPanel({ pw, articles, features, news, onDone }) {
 
 function MovingCar() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 overflow-hidden" aria-hidden="true">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-40 overflow-hidden" aria-hidden="true">
       <div className="hero-road" />
       <div className="drive absolute bottom-[33px] left-0"><CarRig className="hero-rig" /></div>
-    </div>);
-}
-
-function HeroSlides() {
-  return (
-    <div className="absolute inset-0" aria-hidden="true">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <div key={n} className="slide" style={{ backgroundImage: `url(/hero/hero-${n}.jpg)`, animationDelay: `${(n - 1) * 5}s` }} />
-      ))}
-      <div className="day-scene" aria-hidden="true"><div className="day-sky" /><div className="day-sunwrap"><div className="day-rays" /><div className="day-sun" /></div><div className="day-cloud c1" /><div className="day-cloud c2" /><div className="day-cloud c3" /><div className="day-cloud c4" /><div className="day-far" /><div className="day-near" /><div className="day-trees" /></div>
-      <div className="hero-ov absolute inset-0" />
     </div>);
 }
