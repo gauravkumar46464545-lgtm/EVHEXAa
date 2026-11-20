@@ -360,3 +360,38 @@ html[data-theme="dark"] .vs-badge {
 html[data-theme="dark"] .vs-badge {
   box-shadow: 0 0 0 4px #1c1915;
 }
+/* ===== COMPACT GAPS FIX (All Sections & Cards) ===== */
+main section:not(#news) {
+  padding-top: 1.5rem !important;
+  padding-bottom: 1.25rem !important;
+}
+
+/* Do sections ke beech double gap na bane */
+main section:not(#news) + section:not(#news) {
+  padding-top: 0.75rem !important;
+}
+
+/* Section headings aur cards ke beech ka gap */
+#articles > div.grid,
+#features > div.grid,
+#reviews > div.grid {
+  margin-top: 1rem !important;
+  gap: 0.75rem !important;
+}
+
+/* EV Finder, Popular EVs aur Compare cards ke beech ka gap */
+#popular .bleed,
+#compare .bleed {
+  gap: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+#popular .mb-5,
+#compare .mb-5 {
+  margin-bottom: 0.75rem !important;
+}
+
+/* Footer ke upar ka extra gap kam karein */
+footer#contact {
+  margin-top: 1rem !important;
+}
