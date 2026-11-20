@@ -13,34 +13,34 @@ import {
   ChevronLeft, ChevronRight, ExternalLink
 } from "lucide-react";
 
-/* ===== DIRECT HERO EV NEWS (Yahan apni 3–4 news aur photos seedha edit karein) ===== */
+/* ===== DIRECT HERO EV NEWS (Topic-wise real photos) ===== */
 const HERO_NEWS = [
   {
-    tag: "BREAKING EV NEWS",
+    tag: "NEW EV LAUNCH",
     title: "Tata Harrier EV & Sierra EV India Launch Timeline Confirmed",
     summary: "Dual-motor AWD aur 500+ km real-world range ke saath nayi SUV lineup jaldi aane wali hai. Isme fast charging, V2L support aur naya connected cabin milega.",
-    image: "/hero/hero-1.jpg",
+    image: "https://images.unsplash.com/photo-1585011664466-b7bbe92f34ef?auto=format&fit=crop&w=1600&q=80",
     link: "#articles",
   },
   {
     tag: "CHARGING UPDATE",
     title: "India Mein 25,000+ Naye Fast Charging Stations Ka Expansion",
     summary: "National highways par 800V ultra-fast chargers lagne se long-distance EV travel aur aasan hoga. 10 se 80% charge ab sirf 20–25 minute mein possible hoga.",
-    image: "/hero/hero-2.jpg",
+    image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=80",
     link: "#articles",
   },
   {
-    tag: "NEW LAUNCH",
-    title: "Mahindra BE 6 & XEV 9e: Real-World Range & Owner Reviews",
+    tag: "OWNER REVIEWS",
+    title: "Mahindra BE 6 & XEV 9e: Real-World Range & Highway Test",
     summary: "Blade battery technology aur futuristic cabin ke saath highway test results saamne aaye. Owners ne ride comfort aur regen braking ko top rating di hai.",
-    image: "/hero/hero-3.jpg",
+    image: "https://images.unsplash.com/photo-1738101001592-d135bfe87d35?auto=format&fit=crop&w=1600&q=80",
     link: "#reviews",
   },
   {
-    tag: "EV POLICY",
+    tag: "EV SCOOTERS & POLICY",
     title: "PM E-DRIVE Scheme: Electric Scooters & Cars Par Naye Benefits",
     summary: "Nayi EV kharidne par road tax waiver aur charging infrastructure subsidies jari rahengi, jisse 2-wheeler aur 4-wheeler buyers ko seedha fayda milega.",
-    image: "/hero/hero-4.jpg",
+    image: "https://images.unsplash.com/photo-1594054763281-0946baaad462?auto=format&fit=crop&w=1600&q=80",
     link: "#popular",
   },
 ];
@@ -133,7 +133,7 @@ export default function Home() {
       </header>
 
       <main id="top">
-        {/* Hero EV News Slider (Auto + Manual Left/Right + Tap to Open Photo/News + Car & Road) */}
+        {/* Hero EV News Slider (Full Banner Tap-to-Open + Auto Slide + Car & Road) */}
         <HeroNewsBoard news={news} />
 
         <EvShowcase />
@@ -214,34 +214,39 @@ export default function Home() {
   );
 }
 
-/* ---------------- Hero EV News Slider (Manual Left/Right + Tap Popup + Car & Road) ---------------- */
+/* ---------------- Hero EV News Slider (Full Banner Tap-to-Open + Auto Slide + Car & Road) ---------------- */
 function HeroNewsBoard({ news = [] }) {
   const slides = [
     ...news.map((n) => ({
       tag: "LIVE EV NEWS",
       title: n.title,
       summary: n.summary,
-      image: n.image || "/hero/hero-1.jpg",
+      image: n.image || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=80",
       link: n.link || "",
     })),
     ...HERO_NEWS,
   ];
 
   const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [activeNews, setActiveNews] = useState(null);
   const touchX = useRef(0);
 
-  const prevSlide = () => setIdx((p) => (p - 1 + slides.length) % slides.length);
-  const nextSlide = () => setIdx((p) => (p + 1) % slides.length);
+  const prevSlide = (e) => {
+    e?.stopPropagation();
+    setIdx((p) => (p - 1 + slides.length) % slides.length);
+  };
+  const nextSlide = (e) => {
+    e?.stopPropagation();
+    setIdx((p) => (p + 1) % slides.length);
+  };
 
   useEffect(() => {
-    if (paused || activeNews) return;
+    if (activeNews) return;
     const timer = setInterval(() => {
       setIdx((p) => (p + 1) % slides.length);
     }, 3000);
     return () => clearInterval(timer);
-  }, [paused, activeNews, slides.length]);
+  }, [activeNews, slides.length]);
 
   useEffect(() => {
     if (!activeNews) return;
@@ -255,8 +260,6 @@ function HeroNewsBoard({ news = [] }) {
       <section
         id="news"
         className="relative overflow-hidden border-b border-[#251a45] bg-[#120f2a]"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
         onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
         onTouchEnd={(e) => {
           const diff = touchX.current - e.changedTouches[0].clientX;
@@ -272,60 +275,44 @@ function HeroNewsBoard({ news = [] }) {
           {slides.map((item, i) => (
             <div
               key={i}
-              className="relative w-full shrink-0 bg-cover bg-center"
+              onClick={() => setActiveNews(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && setActiveNews(item)}
+              aria-label={`Open news: ${item.title}`}
+              className="relative w-full shrink-0 cursor-pointer bg-cover bg-center"
               style={{ backgroundImage: `url(${item.image})` }}
             >
-              {/* Dark readable overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/75 to-[#0e0b16]/50" />
+              {/* Dark gradient taaki har topic photo ke upar text crisp dikhe */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/65 to-[#0e0b16]/25" />
 
-              <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-6 px-12 pb-40 pt-8 md:grid-cols-[1.3fr_0.9fr] md:px-14 md:pb-44 md:pt-10">
-                {/* Left: News Text */}
-                <div>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
-                    {item.tag}
-                  </span>
-                  <h1
-                    onClick={() => setActiveNews(item)}
-                    className="mt-3 cursor-pointer font-display text-3xl font-bold leading-tight text-white hover:text-[#f4b942] md:text-5xl"
+              <div className="relative z-10 mx-auto max-w-6xl px-12 pb-40 pt-8 md:px-14 md:pb-44 md:pt-10">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
+                  {item.tag}
+                </span>
+                <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
+                  {item.title}
+                </h1>
+                <p className="mt-2 line-clamp-2 max-w-xl text-sm text-slate-200 md:text-base">
+                  {item.summary}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <span className="btn inline-block">Read more</span>
+                  <a
+                    href="#reviews"
+                    onClick={(e) => e.stopPropagation()}
+                    className="rounded-full border border-white/35 bg-black/35 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]"
                   >
-                    {item.title}
-                  </h1>
-                  <p className="mt-2 line-clamp-2 max-w-xl text-sm text-slate-200 md:text-base">
-                    {item.summary}
-                  </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <button type="button" onClick={() => setActiveNews(item)} className="btn">
-                      Open news
-                    </button>
-                    <a href="#reviews" className="rounded-full border border-white/30 bg-black/30 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]">
-                      Write a review
-                    </a>
-                  </div>
+                    Write a review
+                  </a>
                 </div>
-
-                {/* Right: Tappable News Photo Card */}
-                <button
-                  type="button"
-                  onClick={() => setActiveNews(item)}
-                  aria-label={`Open photo for ${item.title}`}
-                  className="group relative hidden overflow-hidden rounded-2xl border-2 border-[#f4b942]/70 bg-black/40 text-left shadow-2xl transition hover:scale-[1.02] hover:border-[#ffe24a] sm:block"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="h-48 w-full object-cover transition duration-300 group-hover:scale-105 md:h-52"
-                  />
-                  <span className="absolute bottom-2.5 right-2.5 rounded-full bg-black/70 px-3 py-1 text-[11px] font-semibold text-[#ffe24a] backdrop-blur">
-                    Tap to open
-                  </span>
-                </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Left & Right Manual Controls */}
+        {/* Left & Right Manual Arrows */}
         <button
           type="button"
           onClick={prevSlide}
@@ -349,7 +336,7 @@ function HeroNewsBoard({ news = [] }) {
             <button
               key={i}
               type="button"
-              onClick={() => setIdx(i)}
+              onClick={(e) => { e.stopPropagation(); setIdx(i); }}
               aria-label={`News slide ${i + 1}`}
               className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/45 hover:bg-white/80"}`}
             />
@@ -360,7 +347,7 @@ function HeroNewsBoard({ news = [] }) {
         <MovingCar />
       </section>
 
-      {/* Tap-to-Open News & Photo Modal */}
+      {/* Tap-to-Open News & Full Photo Modal */}
       {activeNews && (
         <div
           className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-sm"
@@ -374,7 +361,7 @@ function HeroNewsBoard({ news = [] }) {
             className="w-full max-w-2xl overflow-hidden rounded-2xl border-2 border-[#f4b942]/60 bg-panel shadow-2xl"
           >
             <div className="relative">
-              <img src={activeNews.image} alt={activeNews.title} className="max-h-[360px] w-full object-cover" />
+              <img src={activeNews.image} alt={activeNews.title} className="max-h-[380px] w-full object-cover" />
               <button
                 type="button"
                 onClick={() => setActiveNews(null)}
