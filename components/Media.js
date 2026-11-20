@@ -11,7 +11,7 @@ const release = (key) => { if (current && current.key === key) current = null; }
 
 // The box always follows the media's own ratio (9:16 reels stay 9:16, 16:9 stays 16:9).
 function Frame({ ratio, children }) {
-  return <div className="relative w-full overflow-hidden bg-black/10" style={{ aspectRatio: ratio || 16 / 9, maxHeight: "min(640px, 80vh)" }}>{children}</div>;
+  return <div className="relative w-full overflow-hidden bg-black/10" style={{ aspectRatio: ratio || 16 / 9, maxHeight: "340px" }}>{children}</div>;
 }
 
 function FileVideo({ src, onRatio }) {

@@ -83,10 +83,10 @@ export default function Home() {
 
         {msg && <p className="mx-auto mt-4 max-w-6xl px-4 text-sm text-red-400" role="alert">{msg}</p>}
 
-        <section id="features" className="mx-auto max-w-6xl px-4 py-14">
+       <section id="features" className="mx-auto max-w-6xl px-4 py-6">
           <h2 className="font-display text-3xl font-semibold">Featured highlights</h2>
-          {!features.length && <p className="mt-4 text-slate-500">No highlights yet. The admin can add the first one.</p>}
-          <div className="mt-6 grid grid-cols-2 items-start gap-3 md:grid-cols-3 lg:grid-cols-4">
+          {!features.length && <p className="mt-3 text-slate-500">No highlights yet. The admin can add the first one.</p>}
+          <div className="mt-4 grid grid-cols-2 items-start gap-3 md:grid-cols-3 lg:grid-cols-4">
             {features.map((f) => (
               <article key={f._id} className="overflow-hidden rounded-lg border border-[#251a45] bg-panel">
                 <Media src={f.media} type={f.mediaType} w={f.mediaW} h={f.mediaH} alt={f.title} />
