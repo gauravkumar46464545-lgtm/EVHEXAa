@@ -5,6 +5,8 @@ import Media from "@/components/Media";
 import CarRig from "@/components/CarRig";
 import { NewsBanner, EvShowcase, CompareEvs } from "@/components/EvSections";
 import ThemeMenu from "@/components/ThemeMenu";
+import FaqSection from "@/components/FaqSection";
+import FaqAdmin from "@/components/FaqAdmin";
 import { Instagram, Youtube, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
 
 const fmt = (d) => {
@@ -30,6 +32,7 @@ export default function Home() {
   const [news, setNews] = useState([]); const [features, setFeatures] = useState([]); const [articles, setArticles] = useState([]); const [reviews, setReviews] = useState([]);
   const [open, setOpen] = useState(null); const [pw, setPw] = useState(null); const [showLogin, setShowLogin] = useState(false);
   const [votes, setVotes] = useState({}); const [msg, setMsg] = useState("");
+  const [faqTick, setFaqTick] = useState(0);
 
   const load = async () => {
     const [f, a, r, n] = await Promise.all([api("/api/features"), api("/api/articles"), api("/api/reviews"), api("/api/news").catch(() => [])]);
@@ -54,7 +57,7 @@ export default function Home() {
 
   return (
     <div>
-    <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
           <a href="#top" aria-label="EV HEXA home" className="block h-[60px] w-[60px] overflow-hidden rounded-full">
             <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
@@ -77,7 +80,6 @@ export default function Home() {
         </section>
         <NewsBanner news={news} admin={!!pw} onManage={goAdmin} />
         <EvShowcase />
-
 
         {msg && <p className="mx-auto mt-4 max-w-6xl px-4 text-sm text-red-400" role="alert">{msg}</p>}
 
@@ -113,7 +115,9 @@ export default function Home() {
 
         <CompareEvs />
         <ReviewSection reviews={reviews} onAdded={(r) => setReviews([r, ...reviews])} />
+        <FaqSection refresh={faqTick} />
         {pw && <AdminPanel pw={pw} articles={articles} features={features} news={news} onDone={load} />}
+        {pw && <FaqAdmin pw={pw} onChanged={() => setFaqTick((t) => t + 1)} />}
       </main>
 
       {showLogin && <Login onClose={() => setShowLogin(false)} onOk={(p) => { setPw(p); setShowLogin(false); goAdmin(); }} />}
@@ -154,7 +158,6 @@ function Login({ onClose, onOk }) {
     </div>);
 }
 
-
 function ReviewSection({ reviews, onAdded }) {
   const [f, setF] = useState({ name: "", rating: 5, text: "" }); const [err, setErr] = useState("");
   const send = async (e) => { e.preventDefault(); try { onAdded(await post("/api/reviews", f)); setF({ name: "", rating: 5, text: "" }); setErr(""); } catch (x) { setErr(x.message); } };
@@ -183,7 +186,7 @@ const fmtSize = (b) => (b >= 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.m
 
 function MediaPick({ obj, set, setNote, field, label, onBusy, pw }) {
   const isMedia = field === "media";
-  const LIMIT = isMedia ? 100 * 1048576 : 10 * 1048576; // Cloudinary free-plan limits
+  const LIMIT = isMedia ? 100 * 1048576 : 10 * 1048576;
   const [up, setUp] = useState(null); const xhr = useRef(null); const input = useRef(null);
   const pick = async (file) => {
     if (!file) return;
@@ -239,8 +242,7 @@ function AdminPanel({ pw, articles, features, news, onDone }) {
   const [nw, setNw] = useState(E3); const [editN, setEditN] = useState(null); const [upN, setUpN] = useState(false);
   const [editF, setEditF] = useState(null); const [editA, setEditA] = useState(null);
   const [note, setNote] = useState(""); const [busy, setBusy] = useState(false); const lock = useRef(false);
-  const [upF, setUpF] = useState(false); const [upA, setUpA] = useState(false); // true while a file is uploading
-  // Only the first tap runs; every further tap is ignored until the request finishes.
+  const [upF, setUpF] = useState(false); const [upA, setUpA] = useState(false);
   const run = async (fn, ok) => {
     if (lock.current) return; lock.current = true; setBusy(true);
     try { await fn(); setNote(ok); await onDone(); } catch (x) { setNote(x.message); } finally { lock.current = false; setBusy(false); }
@@ -315,12 +317,10 @@ function AdminPanel({ pw, articles, features, news, onDone }) {
 function MovingCar() {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 overflow-hidden" aria-hidden="true">
-      
       <div className="hero-road" />
       <div className="drive absolute bottom-[33px] left-0"><CarRig className="hero-rig" /></div>
     </div>);
 }
-
 
 function HeroSlides() {
   return (
