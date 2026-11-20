@@ -309,3 +309,54 @@ html[data-theme="light"] [class*="from-panel"] {
 html[data-theme="light"] [class*="to-[#2a1250]"] {
   --tw-gradient-to: #f1dfbc;
 }
+/* ================= MATCHING DARK & GOLD THEME ================= */
+html[data-theme="dark"] body {
+  background: #12100e;
+  color: #f5efe6;
+}
+html[data-theme="dark"] .bg-ink {
+  background-color: #12100e;
+}
+html[data-theme="dark"] .bg-ink\/90 {
+  background-color: rgba(18, 16, 14, 0.9);
+}
+html[data-theme="dark"] .bg-panel {
+  background-color: #1c1915;
+}
+html[data-theme="dark"] [class*="border-[#251a45]"] {
+  border-color: #2f281f;
+}
+html[data-theme="dark"] [class*="border-[#36275f]"] {
+  border-color: #463a2a;
+}
+html[data-theme="dark"] .text-volt { color: #f4b942; }
+html[data-theme="dark"] .text-hexa { color: #ffcf5c; }
+html[data-theme="dark"] .fill-hexa { fill: #f4b942; color: #f4b942; }
+html[data-theme="dark"] .inp {
+  background: #14110e;
+  border-color: #463a2a;
+  color: #f5efe6;
+  border-radius: 0.75rem;
+}
+html[data-theme="dark"] .inp:focus {
+  border-color: #f4b942;
+}
+html[data-theme="dark"] .btn {
+  background: linear-gradient(90deg, #ffe24a 0%, #f4b624 55%, #de910c 100%);
+  color: #1c1408;
+  font-weight: 700;
+  border-radius: 9999px;
+}
+html[data-theme="dark"] .finder,
+html[data-theme="dark"] .news-banner {
+  border-color: #463a2a;
+  background: linear-gradient(135deg, rgba(244, 185, 66, 0.12), transparent 65%), #1c1915;
+}
+html[data-theme="dark"] .news-callout,
+html[data-theme="dark"] .vs-badge {
+  background: linear-gradient(145deg, #ffe24a, #de910c);
+  color: #1c1408;
+}
+html[data-theme="dark"] .vs-badge {
+  box-shadow: 0 0 0 4px #1c1915;
+}

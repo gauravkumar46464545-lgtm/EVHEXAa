@@ -7,7 +7,7 @@ import { NewsBanner, EvShowcase, CompareEvs } from "@/components/EvSections";
 import ThemeMenu from "@/components/ThemeMenu";
 import FaqSection from "@/components/FaqSection";
 import FaqAdmin from "@/components/FaqAdmin";
-import { Instagram, Youtube, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
+import { Instagram, Youtube, Facebook, Linkedin, Star, ThumbsUp, ThumbsDown, Phone, Mail, MapPin, Lock, X } from "lucide-react";
 
 const fmt = (d) => {
   const x = new Date(d);
@@ -58,6 +58,42 @@ export default function Home() {
   return (
     <div>
       <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
+        {/* Top Utility Bar */}
+        <div className="border-b border-[#251a45] bg-panel/80 text-xs text-slate-400">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2">
+            <div className="flex items-center gap-3">
+              <a href="tel:+910000000000" className="flex items-center gap-1.5 hover:text-volt">
+                <Phone size={14} className="text-hexa" />
+                <span>+91 00000 00000</span>
+              </a>
+              <span className="text-slate-600">|</span>
+              <a href="mailto:contact@evhexa.com" className="flex items-center gap-1.5 hover:text-volt">
+                <Mail size={14} className="text-hexa" />
+                <span>contact@evhexa.com</span>
+              </a>
+            </div>
+            <div className="hidden items-center gap-3 md:flex">
+              <div className="flex items-center gap-2">
+                <a href="https://www.instagram.com/evhexa.it/" target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Instagram size={13} /></a>
+                <a href="https://www.youtube.com/@EVHEXA" target="_blank" rel="noreferrer" aria-label="YouTube" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Youtube size={13} /></a>
+                <a href="#" aria-label="Facebook" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Facebook size={13} /></a>
+                <a href="#" aria-label="LinkedIn" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Linkedin size={13} /></a>
+              </div>
+              <span className="text-slate-600">|</span>
+              <div className="flex items-center gap-3 font-medium tracking-wide">
+                <a href="#privacy" className="hover:text-volt">PRIVACY</a>
+                <span className="text-slate-600">|</span>
+                <a href="#terms" className="hover:text-volt">TERMS &amp; CONDITIONS</a>
+                <span className="text-slate-600">|</span>
+                <a href="#career" className="hover:text-volt">CAREER</a>
+                <span className="text-slate-600">|</span>
+                <a href="#contact" className="hover:text-volt">CONTACT US</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Navbar */}
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
           <a href="#top" aria-label="EV HEXA home" className="block h-[60px] w-[60px] overflow-hidden rounded-full">
             <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
@@ -83,7 +119,7 @@ export default function Home() {
 
         {msg && <p className="mx-auto mt-4 max-w-6xl px-4 text-sm text-red-400" role="alert">{msg}</p>}
 
-       <section id="features" className="mx-auto max-w-6xl px-4 py-6">
+        <section id="features" className="mx-auto max-w-6xl px-4 py-6">
           <h2 className="font-display text-3xl font-semibold">Featured highlights</h2>
           {!features.length && <p className="mt-3 text-slate-500">No highlights yet. The admin can add the first one.</p>}
           <div className="mt-4 grid grid-cols-2 items-start gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -122,7 +158,7 @@ export default function Home() {
 
       {showLogin && <Login onClose={() => setShowLogin(false)} onOk={(p) => { setPw(p); setShowLogin(false); goAdmin(); }} />}
 
-      <footer className="mt-10 border-t border-[#251a45] bg-panel">
+      <footer id="contact" className="mt-10 border-t border-[#251a45] bg-panel">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
           <div><div className="mb-4 h-16 w-16 overflow-hidden rounded-full"><img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" /></div><p className="font-display text-xl font-semibold">Follow EV HEXA</p>
             <div className="mt-3 flex gap-4">
