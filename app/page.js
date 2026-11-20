@@ -3,41 +3,45 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Media from "@/components/Media";
 import CarRig from "@/components/CarRig";
-import { NewsBanner, EvShowcase, CompareEvs } from "@/components/EvSections";
+import { EvShowcase, CompareEvs } from "@/components/EvSections";
 import ThemeMenu from "@/components/ThemeMenu";
 import FaqSection from "@/components/FaqSection";
 import FaqAdmin from "@/components/FaqAdmin";
-import { Instagram, Youtube, Facebook, Linkedin, Star, Phone, Mail, MapPin, Lock } from "lucide-react";
+import {
+  Instagram, Youtube, Facebook, Linkedin,
+  Star, Phone, Mail, MapPin, Lock, X,
+  ChevronLeft, ChevronRight, ExternalLink
+} from "lucide-react";
 
-/* ===== DIRECT HERO EV NEWS (Yahan apni 3–4 news seedha edit karein) ===== */
+/* ===== DIRECT HERO EV NEWS (Yahan apni 3–4 news aur photos seedha edit karein) ===== */
 const HERO_NEWS = [
   {
     tag: "BREAKING EV NEWS",
     title: "Tata Harrier EV & Sierra EV India Launch Timeline Confirmed",
-    summary: "Dual-motor AWD aur 500+ km real-world range ke saath nayi SUV lineup jaldi aane wali hai.",
+    summary: "Dual-motor AWD aur 500+ km real-world range ke saath nayi SUV lineup jaldi aane wali hai. Isme fast charging, V2L support aur naya connected cabin milega.",
     image: "/hero/hero-1.jpg",
     link: "#articles",
   },
   {
     tag: "CHARGING UPDATE",
     title: "India Mein 25,000+ Naye Fast Charging Stations Ka Expansion",
-    summary: "National highways par 800V ultra-fast chargers lagne se long-distance EV travel aur aasan hoga.",
+    summary: "National highways par 800V ultra-fast chargers lagne se long-distance EV travel aur aasan hoga. 10 se 80% charge ab sirf 20–25 minute mein possible hoga.",
     image: "/hero/hero-2.jpg",
     link: "#articles",
   },
   {
     tag: "NEW LAUNCH",
     title: "Mahindra BE 6 & XEV 9e: Real-World Range & Owner Reviews",
-    summary: "Blade battery technology aur futuristic cabin ke saath highway test results saamne aaye.",
+    summary: "Blade battery technology aur futuristic cabin ke saath highway test results saamne aaye. Owners ne ride comfort aur regen braking ko top rating di hai.",
     image: "/hero/hero-3.jpg",
     link: "#reviews",
   },
   {
     tag: "EV POLICY",
     title: "PM E-DRIVE Scheme: Electric Scooters & Cars Par Naye Benefits",
-    summary: "Nayi EV kharidne par road tax waiver aur charging infrastructure subsidies jari rahengi.",
+    summary: "Nayi EV kharidne par road tax waiver aur charging infrastructure subsidies jari rahengi, jisse 2-wheeler aur 4-wheeler buyers ko seedha fayda milega.",
     image: "/hero/hero-4.jpg",
-    link: "#news",
+    link: "#popular",
   },
 ];
 
@@ -76,46 +80,46 @@ export default function Home() {
   return (
     <div>
       <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
-        {/* Top Utility Bar */}
-        <div className="border-b border-[#251a45] bg-panel/80 text-xs text-slate-400">
+        {/* Clean & Readable Top Utility Bar */}
+        <div className="border-b border-[#251a45] bg-panel text-xs text-slate-300">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 font-medium">
               <a href="tel:+910000000000" className="flex items-center gap-1.5 hover:text-volt">
-                <Phone size={14} className="text-hexa" />
+                <Phone size={13} className="text-volt" />
                 <span>+91 00000 00000</span>
               </a>
-              <span className="text-slate-600">|</span>
+              <span className="opacity-35">|</span>
               <a href="mailto:contact@evhexa.com" className="flex items-center gap-1.5 hover:text-volt">
-                <Mail size={14} className="text-hexa" />
+                <Mail size={13} className="text-volt" />
                 <span>contact@evhexa.com</span>
               </a>
             </div>
-            <div className="hidden items-center gap-3 md:flex">
-              <div className="flex items-center gap-2">
-                <a href="https://www.instagram.com/evhexa.it/" target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Instagram size={13} /></a>
-                <a href="https://www.youtube.com/@EVHEXA" target="_blank" rel="noreferrer" aria-label="YouTube" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Youtube size={13} /></a>
-                <a href="#" aria-label="Facebook" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Facebook size={13} /></a>
-                <a href="#" aria-label="LinkedIn" className="rounded border border-[#36275f] p-1 hover:border-volt hover:text-volt"><Linkedin size={13} /></a>
+            <div className="hidden items-center gap-4 md:flex">
+              <div className="flex items-center gap-3">
+                <a href="https://www.instagram.com/evhexa.it/" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-volt"><Instagram size={14} /></a>
+                <a href="https://www.youtube.com/@EVHEXA" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-volt"><Youtube size={14} /></a>
+                <a href="#" aria-label="Facebook" className="hover:text-volt"><Facebook size={14} /></a>
+                <a href="#" aria-label="LinkedIn" className="hover:text-volt"><Linkedin size={14} /></a>
               </div>
-              <span className="text-slate-600">|</span>
-              <div className="flex items-center gap-3 font-medium tracking-wide">
+              <span className="opacity-35">|</span>
+              <div className="flex items-center gap-3 font-semibold tracking-wide">
                 <a href="#privacy" className="hover:text-volt">PRIVACY</a>
-                <span className="text-slate-600">|</span>
+                <span className="opacity-35">|</span>
                 <a href="#terms" className="hover:text-volt">TERMS &amp; CONDITIONS</a>
-                <span className="text-slate-600">|</span>
+                <span className="opacity-35">|</span>
                 <a href="#career" className="hover:text-volt">CAREER</a>
-                <span className="text-slate-600">|</span>
+                <span className="opacity-35">|</span>
                 <a href="#contact" className="hover:text-volt">CONTACT US</a>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Navbar with Logo + EV HEXA Text */}
+        {/* Main Navbar: Golden Framed Circular Logo + EVHEXA */}
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
           <a href="#top" aria-label="EV HEXA home" className="flex items-center gap-3">
-            <span className="block h-[56px] w-[56px] shrink-0 overflow-hidden rounded-full border border-[#36275f]">
-              <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+            <span className="block h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border-2 border-[#de910c] p-[2px] ring-2 ring-[#f4b942]/70 shadow-[0_0_14px_rgba(244,185,66,0.45)]">
+              <img src="/logo.png" alt="EV HEXA" className="h-full w-full rounded-full object-cover" />
             </span>
             <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
               <span>EV</span>
@@ -129,10 +133,9 @@ export default function Home() {
       </header>
 
       <main id="top">
-        {/* Hero Section: Direct 3-sec Sliding EV News Board + Road & Car */}
-        <HeroNewsBoard />
+        {/* Hero EV News Slider (Auto + Manual Left/Right + Tap to Open Photo/News + Car & Road) */}
+        <HeroNewsBoard news={news} />
 
-        <NewsBanner news={news} admin={!!pw} onManage={goAdmin} />
         <EvShowcase />
 
         {msg && <p className="mx-auto mt-4 max-w-6xl px-4 text-sm text-red-400" role="alert">{msg}</p>}
@@ -180,8 +183,8 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
           <div>
             <div className="flex items-center gap-3">
-              <div className="h-14 w-14 overflow-hidden rounded-full border border-[#36275f]">
-                <img src="/logo.png" alt="EV HEXA" className="h-full w-full object-cover" />
+              <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-[#de910c] p-[2px] ring-2 ring-[#f4b942]/70 shadow-[0_0_12px_rgba(244,185,66,0.4)]">
+                <img src="/logo.png" alt="EV HEXA" className="h-full w-full rounded-full object-cover" />
               </div>
               <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
                 <span>EV</span>
@@ -211,71 +214,207 @@ export default function Home() {
   );
 }
 
-/* ---------------- Hero EV News Slider (Car & Road As-Is) ---------------- */
-function HeroNewsBoard() {
+/* ---------------- Hero EV News Slider (Manual Left/Right + Tap Popup + Car & Road) ---------------- */
+function HeroNewsBoard({ news = [] }) {
+  const slides = [
+    ...news.map((n) => ({
+      tag: "LIVE EV NEWS",
+      title: n.title,
+      summary: n.summary,
+      image: n.image || "/hero/hero-1.jpg",
+      link: n.link || "",
+    })),
+    ...HERO_NEWS,
+  ];
+
   const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [activeNews, setActiveNews] = useState(null);
+  const touchX = useRef(0);
+
+  const prevSlide = () => setIdx((p) => (p - 1 + slides.length) % slides.length);
+  const nextSlide = () => setIdx((p) => (p + 1) % slides.length);
 
   useEffect(() => {
+    if (paused || activeNews) return;
     const timer = setInterval(() => {
-      setIdx((prev) => (prev + 1) % HERO_NEWS.length);
+      setIdx((p) => (p + 1) % slides.length);
     }, 3000);
     return () => clearInterval(timer);
-  }, []);
+  }, [paused, activeNews, slides.length]);
+
+  useEffect(() => {
+    if (!activeNews) return;
+    const esc = (e) => { if (e.key === "Escape") setActiveNews(null); };
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [activeNews]);
 
   return (
-    <section className="relative overflow-hidden border-b border-[#251a45] bg-[#120f2a]">
-      {/* Sliding News Track */}
-      <div
-        className="flex transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(-${idx * 100}%)` }}
+    <>
+      <section
+        id="news"
+        className="relative overflow-hidden border-b border-[#251a45] bg-[#120f2a]"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+        onTouchEnd={(e) => {
+          const diff = touchX.current - e.changedTouches[0].clientX;
+          if (diff > 45) nextSlide();
+          else if (diff < -45) prevSlide();
+        }}
       >
-        {HERO_NEWS.map((item, i) => (
-          <div
-            key={i}
-            className="relative w-full shrink-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${item.image})` }}
-          >
-            {/* Dark readable scrim so news text stays sharp in both Light & Dark modes */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/70 to-[#0e0b16]/35" />
+        {/* Sliding News Track */}
+        <div
+          className="flex transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${idx * 100}%)` }}
+        >
+          {slides.map((item, i) => (
+            <div
+              key={i}
+              className="relative w-full shrink-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${item.image})` }}
+            >
+              {/* Dark readable overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/75 to-[#0e0b16]/50" />
 
-            <div className="relative z-10 mx-auto max-w-6xl px-4 pb-40 pt-8 md:pb-44 md:pt-10">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
-                {item.tag}
+              <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-6 px-12 pb-40 pt-8 md:grid-cols-[1.3fr_0.9fr] md:px-14 md:pb-44 md:pt-10">
+                {/* Left: News Text */}
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
+                    {item.tag}
+                  </span>
+                  <h1
+                    onClick={() => setActiveNews(item)}
+                    className="mt-3 cursor-pointer font-display text-3xl font-bold leading-tight text-white hover:text-[#f4b942] md:text-5xl"
+                  >
+                    {item.title}
+                  </h1>
+                  <p className="mt-2 line-clamp-2 max-w-xl text-sm text-slate-200 md:text-base">
+                    {item.summary}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <button type="button" onClick={() => setActiveNews(item)} className="btn">
+                      Open news
+                    </button>
+                    <a href="#reviews" className="rounded-full border border-white/30 bg-black/30 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]">
+                      Write a review
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right: Tappable News Photo Card */}
+                <button
+                  type="button"
+                  onClick={() => setActiveNews(item)}
+                  aria-label={`Open photo for ${item.title}`}
+                  className="group relative hidden overflow-hidden rounded-2xl border-2 border-[#f4b942]/70 bg-black/40 text-left shadow-2xl transition hover:scale-[1.02] hover:border-[#ffe24a] sm:block"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-48 w-full object-cover transition duration-300 group-hover:scale-105 md:h-52"
+                  />
+                  <span className="absolute bottom-2.5 right-2.5 rounded-full bg-black/70 px-3 py-1 text-[11px] font-semibold text-[#ffe24a] backdrop-blur">
+                    Tap to open
+                  </span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Left & Right Manual Controls */}
+        <button
+          type="button"
+          onClick={prevSlide}
+          aria-label="Previous news"
+          className="absolute left-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:left-4"
+        >
+          <ChevronLeft size={22} />
+        </button>
+        <button
+          type="button"
+          onClick={nextSlide}
+          aria-label="Next news"
+          className="absolute right-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:right-4"
+        >
+          <ChevronRight size={22} />
+        </button>
+
+        {/* Slide Indicator Dots */}
+        <div className="absolute bottom-36 right-6 z-20 flex gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setIdx(i)}
+              aria-label={`News slide ${i + 1}`}
+              className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/45 hover:bg-white/80"}`}
+            />
+          ))}
+        </div>
+
+        {/* Car & Road As-Is */}
+        <MovingCar />
+      </section>
+
+      {/* Tap-to-Open News & Photo Modal */}
+      {activeNews && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-sm"
+          onClick={() => setActiveNews(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={activeNews.title}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-2xl overflow-hidden rounded-2xl border-2 border-[#f4b942]/60 bg-panel shadow-2xl"
+          >
+            <div className="relative">
+              <img src={activeNews.image} alt={activeNews.title} className="max-h-[360px] w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setActiveNews(null)}
+                aria-label="Close"
+                className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/70 text-white hover:bg-[#f4b942] hover:text-[#1c1408]"
+              >
+                <X size={18} />
+              </button>
+              <span className="absolute bottom-3 left-4 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                {activeNews.tag}
               </span>
-              <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
-                {item.title}
-              </h1>
-              <p className="mt-2 max-w-xl text-sm text-slate-200 md:text-base">
-                {item.summary}
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <a href={item.link} className="btn">Read more</a>
-                <a href="#reviews" className="rounded-full border border-white/30 bg-black/30 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]">
-                  Write a review
-                </a>
+            </div>
+            <div className="p-6">
+              <h2 className="font-display text-2xl font-bold leading-snug md:text-3xl">{activeNews.title}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-slate-300 md:text-base">{activeNews.summary}</p>
+              <div className="mt-5 flex flex-wrap items-center justify-end gap-3">
+                {activeNews.link && (
+                  <a
+                    href={activeNews.link}
+                    target={activeNews.link.startsWith("http") ? "_blank" : undefined}
+                    rel={activeNews.link.startsWith("http") ? "noreferrer" : undefined}
+                    onClick={() => !activeNews.link.startsWith("http") && setActiveNews(null)}
+                    className="btn inline-flex items-center gap-2"
+                  >
+                    Read full update <ExternalLink size={15} />
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveNews(null)}
+                  className="rounded-full border border-[#36275f] px-5 py-2 text-sm font-semibold hover:border-volt"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Slide Indicator Dots */}
-      <div className="absolute bottom-36 right-6 z-20 flex gap-2">
-        {HERO_NEWS.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setIdx(i)}
-            aria-label={`News slide ${i + 1}`}
-            className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/40 hover:bg-white/70"}`}
-          />
-        ))}
-      </div>
-
-      {/* Car & Road As-Is */}
-      <MovingCar />
-    </section>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -432,9 +571,9 @@ function AdminPanel({ pw, articles, features, news, onDone }) {
           </fieldset></form>
         <form id="newsForm" onSubmit={saveNews} aria-busy={busy} className="rounded-xl border border-[#251a45] bg-panel p-5 lg:col-span-2">
           <fieldset disabled={busy} className="space-y-3 disabled:opacity-60">
-            <h3 className="font-display text-xl font-semibold">{editN ? "Edit EV news" : "Add EV news"}</h3>
+            <h3 className="font-display text-xl font-semibold">{editN ? "Edit EV news" : "Add EV news (Hero Slider)"}</h3>
             <input className="inp" placeholder="Headline" value={nw.title} onChange={(e) => setNw({ ...nw, title: e.target.value })} required />
-            <textarea className="inp" rows={3} maxLength={400} placeholder="Short summary (shown on the news card)" value={nw.summary} onChange={(e) => setNw({ ...nw, summary: e.target.value })} required />
+            <textarea className="inp" rows={3} maxLength={400} placeholder="Short summary (shown on the hero slider & popup)" value={nw.summary} onChange={(e) => setNw({ ...nw, summary: e.target.value })} required />
             <input className="inp" type="url" placeholder="Source link (optional) https://…" value={nw.link} onChange={(e) => setNw({ ...nw, link: e.target.value })} />
             <MediaPick obj={nw} set={setNw} pw={pw} setNote={setNote} onBusy={setUpN} field="image" label="Photo URL (or upload a file)" />
             <div className="flex gap-2"><button disabled={busy || upN} className="btn">{upN ? "Uploading… please wait" : busy ? "Please wait…" : editN ? "Save changes" : "Publish news"}</button>
