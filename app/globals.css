@@ -395,3 +395,8 @@ main section:not(#news) + section:not(#news) {
 footer#contact {
   margin-top: 1rem !important;
 }
+/* Keep horizontal scrollers aligned inside container with subtle peek */
+.bleed {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
