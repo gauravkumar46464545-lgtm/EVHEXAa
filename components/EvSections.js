@@ -241,6 +241,7 @@ export function EvShowcase() {
 }
 
 /* ---------------- Compare Electric Vehicles ---------------- */
+/* ---------------- Compare Electric Vehicles (Admin Editable) ---------------- */
 function Stat({ label, value, win }) {
   return (
     <div className="text-center">
@@ -255,18 +256,18 @@ function Side({ v, o, flip }) {
     <div className="flex min-w-0 flex-1 flex-col items-center px-2 text-center">
       <div className="relative h-[96px] w-full overflow-hidden rounded-xl border border-[#251a45]">
         <img
-          src={carSrc(v)}
+          src={v.photo || `/vehicles/ev-${v.img || 1}.png`}
           alt={`${v.brand} ${v.model}`}
           className={`h-full w-full object-cover ${flip ? "-scale-x-100" : ""}`}
           loading="lazy"
         />
       </div>
       <p className="mt-2.5 text-[11px] font-semibold uppercase tracking-[.16em] text-slate-500">{v.brand}</p>
-      <h3 className="truncate w-full font-display text-lg font-bold leading-tight">{v.model}</h3>
+      <h3 className="w-full truncate font-display text-lg font-bold leading-tight">{v.model}</h3>
       <div className="mt-2.5 w-full space-y-1.5 border-t border-[#251a45] pt-2.5">
-        <Stat label="Starting price" value={priceText(v.price)} win={v.price < o.price} />
-        <Stat label="Range" value={`${v.range} km`} win={v.range > o.range} />
-        <Stat label="Top speed" value={`${v.speed} km/h`} win={v.speed > o.speed} />
+        <Stat label="Starting price" value={priceText(Number(v.price || 0))} win={Number(v.price) < Number(o.price)} />
+        <Stat label="Range" value={`${v.range} km`} win={Number(v.range) > Number(o.range)} />
+        <Stat label="Top speed" value={`${v.speed} km/h`} win={Number(v.speed) > Number(o.speed)} />
       </div>
     </div>
   );
@@ -284,9 +285,11 @@ function CompareCard({ a, b, full }) {
   );
 }
 
-export function CompareEvs() {
+export function CompareEvs({ items = [] }) {
   const [all, setAll] = useState(false);
-  const pairs = PAIRS.map(([x, y]) => [byId(x), byId(y)]);
+  const fallback = PAIRS.map(([x, y]) => ({ _id: x + y, carA: byId(x), carB: byId(y) }));
+  const list = items.length ? items : fallback;
+
   return (
     <section id="compare" aria-labelledby="compare-h" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-6">
       <Head
@@ -301,11 +304,11 @@ export function CompareEvs() {
       />
       {all ? (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {pairs.map(([a, b]) => <CompareCard key={a.id + b.id} a={a} b={b} full />)}
+          {list.map((p) => <CompareCard key={p._id} a={p.carA} b={p.carB} full />)}
         </div>
       ) : (
         <Scroller label="Compare electric vehicles" step={380}>
-          {pairs.map(([a, b]) => <CompareCard key={a.id + b.id} a={a} b={b} />)}
+          {list.map((p) => <CompareCard key={p._id} a={p.carA} b={p.carB} />)}
         </Scroller>
       )}
     </section>
