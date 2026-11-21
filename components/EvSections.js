@@ -1,246 +1,179 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, BatteryCharging, ChevronLeft, ChevronRight, Gauge, Newspaper, Search, X } from "lucide-react";
-import { VEHICLES, PAIRS, BUDGETS, RANGES, inBudget, priceText, byId } from "@/lib/vehicles";
-import { fmt } from "@/lib/fmt";
+import { VEHICLES, PAIRS, priceText, byId } from "@/lib/vehicles";
+import {
+  ArrowRight, BatteryCharging, ChevronLeft, ChevronRight, Gauge, X
+} from "lucide-react";
 
-const carSrc = (v) => v.photo || `/vehicles/ev-${v.img}.png`;
-
-/* Horizontal carousel inside container: shows 5 cards cleanly on desktop with subtle scroll/peek */
-function Scroller({ label, step = 440, children }) {
-  const ref = useRef(null);
-  const go = (d) => ref.current?.scrollBy({ left: d * step, behavior: "smooth" });
-  return (
-    <div className="relative">
-      <div
-        ref={ref}
-        tabIndex={0}
-        aria-label={label}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-3"
-      >
-        {children}
-      </div>
-      <button
-        type="button"
-        onClick={() => go(-1)}
-        aria-label="Scroll left"
-        className="nav-arrow -left-3 top-1/2 -translate-y-1/2"
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        type="button"
-        onClick={() => go(1)}
-        aria-label="Scroll right"
-        className="nav-arrow -right-3 top-1/2 -translate-y-1/2"
-      >
-        <ChevronRight size={18} />
-      </button>
-    </div>
-  );
-}
+const carSrc = (v) => v.photo || `/vehicles/ev-${v.img || 1}.png`;
 
 function Head({ id, title, sub, action }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
       <div>
-        <h2 id={id} className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">{title}</h2>
-        {sub && <p className="mt-1 text-sm text-slate-400">{sub}</p>}
+        <h2 id={id} className="font-display text-2xl font-bold uppercase tracking-tight md:text-3xl">{title}</h2>
+        {sub && <p className="mt-0.5 text-sm text-slate-400">{sub}</p>}
       </div>
       {action}
     </div>
   );
 }
 
-/* ---------------- EV NEWS callout banner ---------------- */
-export function NewsBanner({ news, admin, onManage }) {
+function Scroller({ label, step = 300, children }) {
+  const ref = useRef(null);
+  const [at, setAt] = useState({ l: false, r: true });
+  const sync = () => {
+    const el = ref.current;
+    if (!el) return;
+    setAt({ l: el.scrollLeft > 8, r: el.scrollLeft + el.clientWidth < el.scrollWidth - 8 });
+  };
+  useEffect(() => {
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, []);
+  const go = (d) => ref.current?.scrollBy({ left: d * step, behavior: "smooth" });
+  const btn = "hidden md:grid place-items-center absolute top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full border border-[#36275f] bg-panel/95 shadow-lg hover:border-volt disabled:opacity-0 disabled:pointer-events-none transition-opacity";
   return (
-    <section id="news" aria-label="EV news" className="mx-auto max-w-6xl px-4 pt-6">
-      <div className="news-banner grid overflow-hidden rounded-2xl border border-[#36275f] lg:grid-cols-[250px_1fr]">
-        <div className="news-callout flex flex-col justify-between gap-4 p-6">
-          <div>
-            <span className="inline-flex items-center gap-2 text-xs font-bold tracking-[.2em]"><span className="live-dot" />LIVE UPDATES</span>
-            <h2 className="mt-3 flex items-center gap-2 font-display text-4xl font-bold leading-none"><Newspaper size={30} />EV NEWS</h2>
-            <p className="mt-3 text-sm font-medium opacity-90">Launches, prices, charging and policy updates from the EV world.</p>
-          </div>
-          {admin && <button onClick={onManage} className="rounded-lg bg-black/25 px-3 py-2 text-left text-sm font-semibold hover:bg-black/35">Add / edit news →</button>}
-        </div>
-        <div className="min-w-0 p-4">
-          {!news.length ? (
-            <div className="grid h-full min-h-[200px] place-items-center rounded-xl border border-dashed border-[#36275f] text-center text-sm text-slate-400">
-              <p>No news yet.<br />{admin ? "Use “Add / edit news” to publish the first update." : "Check back soon."}</p></div>
-          ) : (
-            <Scroller label="EV news" step={520}>
-              {news.map((n) => (
-                <article key={n._id} className="w-[240px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#251a45] bg-panel">
-                  {n.image ? <img src={n.image} alt={n.title} className="h-28 w-full object-cover" loading="lazy" /> : <div className="h-28 w-full bg-gradient-to-br from-panel to-[#2a1250]" />}
-                  <div className="p-3">
-                    <p className="text-[11px] text-slate-500">{fmt(n.createdAt).replace("Posted on: ", "")}</p>
-                    <h3 className="mt-1 line-clamp-2 font-display text-lg font-semibold leading-snug">{n.title}</h3>
-                    <p className="mt-1 line-clamp-2 text-xs text-slate-400">{n.summary}</p>
-                    {n.link && <a href={n.link} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-volt">Read more <ArrowRight size={12} /></a>}
-                  </div>
-                </article>
-              ))}
-            </Scroller>
-          )}
-        </div>
+    <div className="relative">
+      <button type="button" onClick={() => go(-1)} disabled={!at.l} aria-label={`Scroll ${label} left`} className={`${btn} -left-3`}>
+        <ChevronLeft size={20} />
+      </button>
+      <div
+        ref={ref}
+        onScroll={sync}
+        role="region"
+        aria-label={label}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") go(1);
+          if (e.key === "ArrowLeft") go(-1);
+        }}
+        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 focus:outline-none"
+      >
+        {children}
       </div>
-    </section>
+      <button type="button" onClick={() => go(1)} disabled={!at.r} aria-label={`Scroll ${label} right`} className={`${btn} -right-3`}>
+        <ChevronRight size={20} />
+      </button>
+    </div>
   );
 }
 
-/* ---------------- EV Finder + Popular EVs ---------------- */
-function VehicleCard({ v, full, onOpen }) {
+/* ---------------- Popular EVs (Admin Editable) ---------------- */
+function CarCard({ v, onPick, full }) {
   return (
-    <article
-      className={`${
-        full
-          ? "w-full"
-          : "w-[calc(50%-6px)] sm:w-[calc(33.333%-8px)] lg:w-[calc((100%-48px)/5.15)] shrink-0 snap-start"
-      } flex min-h-[370px] flex-col rounded-2xl border border-[#251a45] bg-panel p-3`}
-    >
-      <div className="relative h-[135px] w-full overflow-hidden rounded-xl border border-[#251a45]">
-        <img
-          src={carSrc(v)}
-          alt={`${v.brand} ${v.model}`}
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
+    <article className={`${full ? "w-full" : "w-[264px] shrink-0 snap-start"} flex flex-col rounded-2xl border border-[#251a45] bg-panel p-3.5 transition-colors hover:border-[#36275f]`}>
+      <div className="relative h-[136px] w-full overflow-hidden rounded-xl border border-[#251a45]">
+        <img src={carSrc(v)} alt={`${v.brand} ${v.model}`} className="h-full w-full object-cover" loading="lazy" />
+        {v.badge && (
+          <span className="badge-tag absolute right-2 top-2 rounded-full bg-ink/85 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-volt backdrop-blur">
+            {v.badge}
+          </span>
+        )}
       </div>
       <p className="mt-2.5 text-[11px] font-semibold uppercase tracking-[.16em] text-slate-500">{v.brand}</p>
-      <h3 className="truncate font-display text-xl font-bold leading-tight">{v.model}</h3>
-      <p className="mt-1 text-xs text-slate-400">Starting <span className="font-semibold text-hexa">{priceText(v.price)}</span></p>
-      <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-[#251a45] pt-2.5">
+      <h3 className="font-display text-xl font-bold leading-tight">{v.model}</h3>
+      <p className="mt-1 text-xs text-slate-400">
+        Starting <span className="font-semibold text-hexa">{priceText(Number(v.price || 0))}</span>
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#251a45] pt-2.5 text-xs">
         <div className="flex items-center gap-1.5">
           <Gauge size={16} className="shrink-0 text-volt" />
-          <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wide text-slate-500">Top Speed</p>
-            <p className="truncate text-xs font-semibold">{v.speed} km/h</p>
+          <div>
+            <p className="font-semibold leading-none">{v.speed} km/h</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">Top Speed</p>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
           <BatteryCharging size={16} className="shrink-0 text-volt" />
-          <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wide text-slate-500">Range</p>
-            <p className="truncate text-xs font-semibold">{v.range} km</p>
+          <div>
+            <p className="font-semibold leading-none">{v.range} km</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">Range</p>
           </div>
         </div>
       </div>
-      <button type="button" onClick={() => onOpen(v)} className="btn mt-auto w-full text-sm">View Details</button>
+      <button
+        type="button"
+        onClick={() => onPick(v)}
+        className="mt-3 w-full rounded-xl border border-[#36275f] py-2 text-center text-xs font-semibold tracking-wide transition-colors hover:border-volt hover:text-volt"
+      >
+        View Details
+      </button>
     </article>
   );
 }
 
-function VehicleModal({ v, onClose }) {
+function CarModal({ v, onClose }) {
   useEffect(() => {
-    const k = (e) => e.key === "Escape" && onClose();
+    const k = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", k);
     return () => document.removeEventListener("keydown", k);
   }, [onClose]);
-  const rows = [["Starting price", priceText(v.price)], ["Range", `${v.range} km`], ["Top speed", `${v.speed} km/h`], ["Battery", v.battery], ["Body", v.body]];
+  if (!v) return null;
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={`${v.brand} ${v.model}`} className="w-full max-w-md rounded-2xl border border-[#36275f] bg-panel p-5" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${v.brand} ${v.model}`}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-2xl border border-[#36275f] bg-panel p-6 shadow-2xl"
+      >
+        <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-slate-500">{v.brand}</p>
-            <h3 className="font-display text-3xl font-bold">{v.model}</h3>
+            <h3 className="font-display text-3xl font-bold leading-tight">{v.model}</h3>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="rounded-full border border-[#36275f] p-2"><X size={16} /></button>
+          <button type="button" onClick={onClose} aria-label="Close" className="rounded-lg border border-[#36275f] p-1.5 hover:border-volt">
+            <X size={18} />
+          </button>
         </div>
-        <div className="relative mt-3 h-[180px] w-full overflow-hidden rounded-xl border border-[#251a45]">
+        <div className="mt-4 h-44 w-full overflow-hidden rounded-xl border border-[#251a45]">
           <img src={carSrc(v)} alt={`${v.brand} ${v.model}`} className="h-full w-full object-cover" />
         </div>
-        <dl className="mt-4 divide-y divide-[#251a45] text-sm">
-          {rows.map(([k, val]) => (
-            <div key={k} className="flex justify-between py-2">
-              <dt className="text-slate-400">{k}</dt>
-              <dd className="font-semibold">{val}</dd>
-            </div>
-          ))}
+        <dl className="mt-4 grid grid-cols-3 gap-2 rounded-xl border border-[#251a45] p-3 text-center">
+          <div><dt className="text-[11px] text-slate-500">Starting price</dt><dd className="mt-0.5 font-display text-lg font-bold text-hexa">{priceText(Number(v.price || 0))}</dd></div>
+          <div><dt className="text-[11px] text-slate-500">Claimed range</dt><dd className="mt-0.5 font-display text-lg font-bold">{v.range} km</dd></div>
+          <div><dt className="text-[11px] text-slate-500">Top speed</dt><dd className="mt-0.5 font-display text-lg font-bold">{v.speed} km/h</dd></div>
         </dl>
-        <p className="mt-3 text-xs text-slate-500">*Indicative figures. Please confirm price and specifications with the manufacturer.</p>
+        <p className="mt-3 text-xs text-slate-500">Ex-showroom India indicative figures. Check local dealer for variant-wise battery options.</p>
       </div>
     </div>
   );
 }
 
-export function EvShowcase() {
-  const [budget, setBudget] = useState("any");
-  const [range, setRange] = useState("any");
-  const [applied, setApplied] = useState({ budget: "any", range: "any" });
+export function EvShowcase({ items = [] }) {
   const [all, setAll] = useState(false);
-  const [open, setOpen] = useState(null);
-  const list = VEHICLES.filter((v) => inBudget(v.price, applied.budget) && (applied.range === "any" || v.range >= +applied.range));
-  const find = (e) => {
-    e.preventDefault();
-    setApplied({ budget, range });
-    document.getElementById("popular")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-  const reset = () => { setBudget("any"); setRange("any"); setApplied({ budget: "any", range: "any" }); };
-  const filtered = applied.budget !== "any" || applied.range !== "any";
+  const [pick, setPick] = useState(null);
+  const list = items.length ? items : VEHICLES;
 
   return (
-    <>
-      <section id="finder" aria-label="EV finder" className="mx-auto max-w-6xl px-4 pt-6">
-        <form onSubmit={find} className="finder grid min-h-[160px] items-center gap-5 p-5 md:grid-cols-[1fr_1.5fr] md:p-6">
-          <div>
-            <p className="text-xs font-bold tracking-[.22em] text-hexa">FIND YOUR EV</p>
-            <h2 className="mt-1 font-display text-3xl font-bold leading-tight md:text-4xl">Electric Vehicles in India</h2>
-            <p className="mt-1 text-sm text-slate-400">Pick a budget and range to match the right EV.</p>
-          </div>
-          <div className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto]">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">Budget
-              <select className="inp mt-1 text-base font-normal normal-case text-inherit" value={budget} onChange={(e) => setBudget(e.target.value)}>
-                {BUDGETS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-              </select>
-            </label>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">Range
-              <select className="inp mt-1 text-base font-normal normal-case text-inherit" value={range} onChange={(e) => setRange(e.target.value)}>
-                {RANGES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-              </select>
-            </label>
-            <button type="submit" className="btn flex h-[46px] items-center justify-center gap-2 px-6 tracking-wide">
-              <Search size={18} />FIND EVs
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <section id="popular" aria-labelledby="popular-h" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-6">
-        <Head
-          id="popular-h"
-          title="Popular Electric Vehicles"
-          sub={filtered ? `${list.length} EV${list.length === 1 ? "" : "s"} match your search` : undefined}
-          action={
-            <div className="flex items-center gap-4">
-              {filtered && <button type="button" onClick={reset} className="text-sm text-slate-400 underline">Reset</button>}
-              <button type="button" onClick={() => setAll(!all)} className="flex items-center gap-1 text-sm font-semibold text-volt hover:underline">
-                {all ? "Show less" : "View All"} <ArrowRight size={16} />
-              </button>
-            </div>
-          }
-        />
-        {!list.length ? (
-          <p className="rounded-xl border border-dashed border-[#36275f] p-8 text-center text-slate-400">No EVs match these filters. Try a wider budget or range.</p>
-        ) : all ? (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {list.map((v) => <VehicleCard key={v.id} v={v} full onOpen={setOpen} />)}
-          </div>
-        ) : (
-          <Scroller label="Popular electric vehicles" step={440}>
-            {list.map((v) => <VehicleCard key={v.id} v={v} onOpen={setOpen} />)}
-          </Scroller>
-        )}
-        <p className="mt-1 text-xs text-slate-500">*Indicative prices and specifications. Please confirm with the manufacturer.</p>
-      </section>
-      {open && <VehicleModal v={open} onClose={() => setOpen(null)} />}
-    </>
+    <section id="popular" aria-labelledby="pop-h" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-6 pt-5">
+      <Head
+        id="pop-h"
+        title="Popular EVs"
+        sub="India's most-searched electric cars at a glance."
+        action={
+          <button type="button" onClick={() => setAll(!all)} className="flex items-center gap-1 text-sm font-semibold text-volt hover:underline">
+            {all ? "Show less" : "View All"} <ArrowRight size={16} />
+          </button>
+        }
+      />
+      {all ? (
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {list.map((v) => <CarCard key={v._id || v.id} v={v} onPick={setPick} full />)}
+        </div>
+      ) : (
+        <Scroller label="Popular electric vehicles" step={276}>
+          {list.map((v) => <CarCard key={v._id || v.id} v={v} onPick={setPick} />)}
+        </Scroller>
+      )}
+      <CarModal v={pick} onClose={() => setPick(null)} />
+    </section>
   );
 }
 
-/* ---------------- Compare Electric Vehicles ---------------- */
 /* ---------------- Compare Electric Vehicles (Admin Editable) ---------------- */
 function Stat({ label, value, win }) {
   return (

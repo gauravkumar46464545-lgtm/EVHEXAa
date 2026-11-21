@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import ThemeMenu from "@/components/ThemeMenu";
-import { ArrowLeft, Briefcase, CheckCircle2, Mail } from "lucide-react";
+import { ArrowLeft, Briefcase, CheckCircle2, Mail, Zap } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -37,12 +37,13 @@ export default function CareerPage() {
       <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-3">
-            <span className="block h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full border-2 border-[#de910c] p-[2px] ring-2 ring-[#f4b942]/70">
+            <span className="block h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full border-2 border-[#16a34a] p-[2px] ring-2 ring-[#22c55e]/60">
               <img src="/logo.png" alt="EV HEXA" className="h-full w-full rounded-full object-cover" />
             </span>
-            <span className="font-display text-2xl font-extrabold italic leading-none tracking-tight">
-              <span>EV</span>
-              <span className="text-hexa">HEXA</span>
+            <span className="inline-flex items-center font-display text-2xl font-extrabold not-italic leading-none tracking-tight">
+              <span className="text-[#16a34a]">EV</span>
+              <Zap size={18} className="mx-0.5 fill-[#16a34a] text-[#16a34a]" />
+              <span className="text-[#111827]">HEXA</span>
             </span>
           </Link>
           <ThemeMenu />
