@@ -1,5 +1,17 @@
+"use client";
+import { Suspense } from "react";
 import NavSubPage from "@/components/NavSubPage";
 
-export default function EvVehiclesPage() {
-  return <NavSubPage section="e-vehicles" title="E-Vehicles in India" subtitle="Explore electric cars, battery range, top speed and starting prices." />;
+export const dynamic = "force-dynamic";
+
+export default function EVehiclesPage() {
+  return (
+    <Suspense fallback={null}>
+      <NavSubPage
+        section="e-vehicles"
+        title="Electric Vehicles"
+        subtitle="Explore electric cars, two-wheelers, range, top speed and starting prices."
+      />
+    </Suspense>
+  );
 }
