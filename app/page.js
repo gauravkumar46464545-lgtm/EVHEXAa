@@ -8,7 +8,7 @@ import ThemeMenu from "@/components/ThemeMenu";
 import FaqSection from "@/components/FaqSection";
 import FaqAdmin from "@/components/FaqAdmin";
 import {
-  Instagram, Youtube, Facebook, Linkedin,
+  Instagram, Youtube, Linkedin,
   Star, Phone, Mail, MapPin, Lock, X,
   ChevronLeft, ChevronRight, ExternalLink
 } from "lucide-react";
@@ -98,18 +98,17 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <a href="https://www.instagram.com/evhexa.it/" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-volt"><Instagram size={14} /></a>
                 <a href="https://www.youtube.com/@EVHEXA" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-volt"><Youtube size={14} /></a>
-                <a href="#" aria-label="Facebook" className="hover:text-volt"><Facebook size={14} /></a>
                 <a href="#" aria-label="LinkedIn" className="hover:text-volt"><Linkedin size={14} /></a>
               </div>
               <span className="opacity-35">|</span>
               <div className="flex items-center gap-3 font-semibold tracking-wide">
-                <a href="#privacy" className="hover:text-volt">PRIVACY</a>
+                <Link href="/privacy" className="hover:text-volt">PRIVACY</Link>
                 <span className="opacity-35">|</span>
-                <a href="#terms" className="hover:text-volt">TERMS &amp; CONDITIONS</a>
+                <Link href="/terms" className="hover:text-volt">TERMS &amp; CONDITIONS</Link>
                 <span className="opacity-35">|</span>
-                <a href="#career" className="hover:text-volt">CAREER</a>
+                <Link href="/career" className="hover:text-volt">CAREER</Link>
                 <span className="opacity-35">|</span>
-                <a href="#contact" className="hover:text-volt">CONTACT US</a>
+                <Link href="/contact" className="hover:text-volt">CONTACT US</Link>
               </div>
             </div>
           </div>
