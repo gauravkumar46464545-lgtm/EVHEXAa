@@ -40,57 +40,46 @@ const VEHICLE_MENU = [
 const DEFAULT_VIDEOS = [
   {
     _id: "yt-ev-1",
-    badge: "4 VIDEOS · EV SUV",
+    badge: "EV SUV",
     title: "Electric SUVs & Highway Range Tests",
     description: "Watch EV SUV reviews, highway cruising clips, and real-world range insights.",
-    media: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-    mediaType: "video",
-    playlist: [
-      { id: "p1", title: "EV SUV Highway Cruise & Aerodynamics", meta: "0:06 · EV Drive", url: "https://assets.mixkit.co/videos/preview/mixkit-white-electric-car-driving-on-a-highway-42871-large.mp4", isFile: true },
-      { id: "p2", title: "City Night Drive & LED Headlight Beam", meta: "0:08 · Night Run", url: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4", isFile: true },
-    ],
+    url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
   },
   {
     _id: "yt-ev-2",
-    badge: "3 VIDEOS · CHARGING",
+    badge: "CHARGING",
     title: "EV Charging Stations & Fast Top-Up Guide",
     description: "Fast charger plug-in clips, charging speeds, and battery care tips for EV owners.",
-    media: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4",
-    mediaType: "video",
-    playlist: [
-      { id: "c1", title: "DC Fast Charger Plug-In & Battery Boost", meta: "0:07 · Fast Charging", url: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4", isFile: true },
-      { id: "c2", title: "Driver Hands on Steering & Smart Cabin View", meta: "0:06 · Cockpit", url: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-driver-on-the-steering-wheel-of-a-car-42868-large.mp4", isFile: true },
-    ],
+    url: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4",
   },
   {
     _id: "yt-ev-3",
-    badge: "5 VIDEOS · SCOOTERS & BIKES",
+    badge: "2-WHEELER EV",
     title: "Electric Scooters & Electric Bikes Walkaround",
     description: "Explore 2-wheeler EV highlights, daily commute performance, and smart features.",
-    media: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4",
-    mediaType: "video",
-    playlist: [
-      { id: "s1", title: "City Night Run & LED Headlamps", meta: "0:08 · Commute", url: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4", isFile: true },
-      { id: "s2", title: "Highway Cruise & Smooth Handling", meta: "0:06 · Road Test", url: "https://assets.mixkit.co/videos/preview/mixkit-white-electric-car-driving-on-a-highway-42871-large.mp4", isFile: true },
-    ],
-  },
-  {
-    _id: "yt-ev-4",
-    badge: "3 VIDEOS · CABIN & TECH",
-    title: "EV Cabin, Infotainment & Driving Experience",
-    description: "Short clips covering steering control, cabin comfort, and connected EV tech.",
-    media: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-driver-on-the-steering-wheel-of-a-car-42868-large.mp4",
-    mediaType: "video",
-    playlist: [
-      { id: "t1", title: "Steering Wheel & Cabin View", meta: "0:06 · Interior", url: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-driver-on-the-steering-wheel-of-a-car-42868-large.mp4", isFile: true },
-      { id: "t2", title: "EV Charging Port Plug-In", meta: "0:07 · Charging", url: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4", isFile: true },
-    ],
+    url: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4",
   },
 ];
 
 const carSrc = (v) => v.photo || `/vehicles/ev-${v.img}.png`;
 const isVideoItem = (f) =>
-  f?.mediaType === "video" || /\.(mp4|webm|ogg|mov)(\?|$)/i.test(f?.media || "") || /(?:youtu\.be\/|v=|embed\/|shorts\/)/i.test(f?.media || "");
+  f?.mediaType === "video" ||
+  /\.(mp4|webm|ogg|mov)(\?|$)/i.test(f?.media || "") ||
+  /(?:youtu\.be\/|v=|embed\/|shorts\/)/i.test(f?.media || "");
+
+function getYtId(url) {
+  if (!url) return "";
+  const fromHelper = ytId(url);
+  if (fromHelper) return fromHelper;
+  const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{6,})/);
+  return m ? m[1] : "";
+}
+
+function getThumb(url) {
+  const id = getYtId(url);
+  if (id) return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+  return "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=900&q=80";
+}
 
 function matchCategory(v, cat) {
   if (!cat || cat === "all") return true;
@@ -103,25 +92,25 @@ function matchCategory(v, cat) {
   return true;
 }
 
-function VideoLibraryView({ videoList }) {
+function VideoLibraryView({ videoList, highlights }) {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
 
   const openPlaylist = (item) => {
     setSelectedPlaylist(item);
-    const firstTrack = item.playlist?.[0] || {
+    const srcUrl = item.url || item.media;
+    setNowPlaying({
       id: item._id,
       title: item.title,
-      meta: item.badge || "EV Video",
-      url: item.media,
-      isFile: /\.(mp4|webm|ogg|mov)(\?|$)/i.test(item.media || ""),
-    };
-    setNowPlaying(firstTrack);
+      meta: item.badge || "EV VIDEO",
+      url: srcUrl,
+      isFile: /\.(mp4|webm|ogg|mov)(\?|$)/i.test(srcUrl || ""),
+    });
   };
 
   const renderPlayer = (track) => {
     if (!track?.url) return null;
-    const id = ytId(track.url);
+    const id = getYtId(track.url);
     if (id && !track.isFile) {
       return (
         <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black">
@@ -150,26 +139,26 @@ function VideoLibraryView({ videoList }) {
   };
 
   const queue = selectedPlaylist
-    ? [
-        ...(selectedPlaylist.playlist || []),
-        ...videoList
-          .filter((v) => v._id !== selectedPlaylist._id)
-          .map((v) => ({
+    ? videoList
+        .filter((v) => v._id !== selectedPlaylist._id)
+        .map((v) => {
+          const u = v.url || v.media;
+          return {
             id: v._id,
             title: v.title,
-            meta: v.badge || "EV Video",
-            url: v.media,
-            isFile: /\.(mp4|webm|ogg|mov)(\?|$)/i.test(v.media || ""),
-          })),
-      ]
+            meta: v.badge || "EV VIDEO",
+            url: u,
+            isFile: /\.(mp4|webm|ogg|mov)(\?|$)/i.test(u || ""),
+          };
+        })
     : [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="rounded-2xl border border-[#251a45] bg-panel p-5">
         <h2 className="font-display text-2xl font-bold">Welcome to the EV Video Library</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Kisi bhi playlist ya video card par click karein — video yahin website ke player mein open hoga aur side/neeche &ldquo;Up Next&rdquo; list bhi chalegi.
+          Click on any playlist or video card to open it in the website player along with the Up Next queue.
         </p>
       </div>
 
@@ -177,7 +166,7 @@ function VideoLibraryView({ videoList }) {
         <div className="rounded-2xl border-2 border-volt/60 bg-panel p-4 md:p-6 shadow-2xl">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <span className="rounded bg-hexa/15 px-2.5 py-0.5 text-xs font-bold text-hexa">{selectedPlaylist.badge}</span>
+              <span className="rounded bg-hexa/15 px-2.5 py-0.5 text-xs font-bold text-hexa">{selectedPlaylist.badge || "EV VIDEO"}</span>
               <h3 className="mt-1 font-display text-2xl font-bold">{nowPlaying.title}</h3>
             </div>
             <button
@@ -227,31 +216,60 @@ function VideoLibraryView({ videoList }) {
         </div>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {videoList.map((f) => (
-          <article
-            key={f._id}
-            onClick={() => openPlaylist(f)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && openPlaylist(f)}
-            className="group cursor-pointer overflow-hidden rounded-2xl border border-[#251a45] bg-panel transition hover:border-volt"
-          >
-            <div className="pointer-events-none relative">
-              <Media src={f.media} type={f.mediaType || "video"} w={f.mediaW} h={f.mediaH} alt={f.title} />
-              <span className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 rounded-full bg-black/80 px-3 py-1 text-xs font-bold text-white backdrop-blur group-hover:bg-volt group-hover:text-ink">
-                <Play size={13} /> Watch here
-              </span>
-            </div>
-            <div className="p-4">
-              <span className="rounded bg-hexa/15 px-2 py-0.5 text-xs font-semibold text-hexa">{f.badge}</span>
-              <h2 className="mt-2 font-display text-xl font-semibold group-hover:text-volt">{f.title}</h2>
-              <p className="mt-1 line-clamp-2 text-sm text-slate-400">{f.description}</p>
-              <p className="mt-2.5 text-xs font-semibold text-volt">Open in website player →</p>
-            </div>
-          </article>
-        ))}
+      {/* Compact YouTube Preview Cards Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {videoList.map((f) => {
+          const mediaUrl = f.url || f.media;
+          return (
+            <article
+              key={f._id}
+              onClick={() => openPlaylist(f)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && openPlaylist(f)}
+              className="group cursor-pointer overflow-hidden rounded-xl border border-[#251a45] bg-panel transition hover:border-volt"
+            >
+              <div className="relative aspect-video w-full overflow-hidden bg-black">
+                <img
+                  src={getThumb(mediaUrl)}
+                  alt={f.title}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <span className="absolute inset-0 grid place-items-center bg-black/25 transition group-hover:bg-black/40">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-red-600 text-white shadow-lg">
+                    <Play size={18} className="ml-0.5 fill-white" />
+                  </span>
+                </span>
+              </div>
+              <div className="p-3.5">
+                <h2 className="line-clamp-1 font-display text-base font-bold group-hover:text-volt">{f.title}</h2>
+                <p className="mt-1 line-clamp-2 text-xs text-slate-400">{f.description}</p>
+                <p className="mt-2 text-xs font-semibold text-volt">Watch video →</p>
+              </div>
+            </article>
+          );
+        })}
       </div>
+
+      {/* Featured Highlights Placed At The Very Bottom */}
+      {highlights.length > 0 && (
+        <section className="border-t border-[#251a45] pt-8">
+          <h3 className="font-display text-2xl font-bold uppercase">Featured Highlights</h3>
+          <div className="mt-4 grid grid-cols-2 items-start gap-3 md:grid-cols-3 lg:grid-cols-4">
+            {highlights.map((f) => (
+              <article key={f._id} className="overflow-hidden rounded-lg border border-[#251a45] bg-panel">
+                <Media src={f.media} type={f.mediaType} w={f.mediaW} h={f.mediaH} alt={f.title} />
+                <div className="p-3">
+                  <span className="rounded bg-hexa/15 px-1.5 py-0.5 text-[11px] text-hexa">{f.badge}</span>
+                  <h4 className="mt-1.5 font-display text-base font-semibold leading-snug">{f.title}</h4>
+                  <p className="mt-1 line-clamp-2 text-xs text-slate-400">{f.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -263,6 +281,7 @@ function NavSubPageInner({ section, title, subtitle }) {
   const [articles, setArticles] = useState([]);
   const [news, setNews] = useState([]);
   const [features, setFeatures] = useState([]);
+  const [adminVideos, setAdminVideos] = useState([]);
   const [brand, setBrand] = useState("ALL");
   const [evDropdownOpen, setEvDropdownOpen] = useState(false);
 
@@ -270,12 +289,13 @@ function NavSubPageInner({ section, title, subtitle }) {
     fetch("/api/articles").then((r) => r.json()).then((d) => Array.isArray(d) && setArticles(d)).catch(() => {});
     fetch("/api/news").then((r) => r.json()).then((d) => Array.isArray(d) && setNews(d)).catch(() => {});
     fetch("/api/features").then((r) => r.json()).then((d) => Array.isArray(d) && setFeatures(d)).catch(() => {});
+    fetch("/api/videos").then((r) => r.json()).then((d) => Array.isArray(d) && setAdminVideos(d)).catch(() => {});
   }, []);
 
   const brands = ["ALL", ...new Set(VEHICLES.map((v) => v.brand))];
   const filteredVehicles = (brand === "ALL" ? VEHICLES : VEHICLES.filter((v) => v.brand === brand))
     .filter((v) => (section === "e-vehicles" ? matchCategory(v, selectedCat) : true));
-  const videoList = [...features.filter(isVideoItem), ...DEFAULT_VIDEOS];
+  const videoList = [...adminVideos, ...features.filter(isVideoItem), ...DEFAULT_VIDEOS];
 
   return (
     <div className="min-h-screen" onClick={() => evDropdownOpen && setEvDropdownOpen(false)}>
@@ -486,7 +506,7 @@ function NavSubPageInner({ section, title, subtitle }) {
           </div>
         )}
 
-        {section === "videos" && <VideoLibraryView videoList={videoList} />}
+        {section === "videos" && <VideoLibraryView videoList={videoList} highlights={features} />}
       </main>
     </div>
   );
