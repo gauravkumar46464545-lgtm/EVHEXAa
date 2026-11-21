@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import BrandLogo from "@/components/BrandLogo";
@@ -173,7 +173,6 @@ function VideoLibraryView({ videoList }) {
         </p>
       </div>
 
-      {/* Active Theater Player + Up Next List (When a card is opened) */}
       {selectedPlaylist && nowPlaying && (
         <div className="rounded-2xl border-2 border-volt/60 bg-panel p-4 md:p-6 shadow-2xl">
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -228,7 +227,6 @@ function VideoLibraryView({ videoList }) {
         </div>
       )}
 
-      {/* Playlist / Video Cards Grid */}
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {videoList.map((f) => (
           <article
@@ -258,7 +256,7 @@ function VideoLibraryView({ videoList }) {
   );
 }
 
-export default function NavSubPage({ section, title, subtitle }) {
+function NavSubPageInner({ section, title, subtitle }) {
   const searchParams = useSearchParams();
   const selectedCat = searchParams?.get("category") || "all";
 
@@ -381,7 +379,6 @@ export default function NavSubPage({ section, title, subtitle }) {
           </div>
         </div>
 
-        {/* 1. E-VEHICLES & BRANDS */}
         {(section === "e-vehicles" || section === "brands") && (
           <>
             {section === "brands" && (
@@ -426,7 +423,6 @@ export default function NavSubPage({ section, title, subtitle }) {
           </>
         )}
 
-        {/* 2. COMPARE */}
         {section === "compare" && (
           <div className="grid gap-4 md:grid-cols-2">
             {PAIRS.map(([x, y]) => {
@@ -450,7 +446,6 @@ export default function NavSubPage({ section, title, subtitle }) {
           </div>
         )}
 
-        {/* 3. NEWS */}
         {section === "news" && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {!news.length ? (
@@ -476,7 +471,6 @@ export default function NavSubPage({ section, title, subtitle }) {
           </div>
         )}
 
-        {/* 4. BLOGS / ARTICLES */}
         {section === "blogs" && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((a) => (
@@ -492,9 +486,16 @@ export default function NavSubPage({ section, title, subtitle }) {
           </div>
         )}
 
-        {/* 5. VIDEOS LIBRARY + IN-PAGE YOUTUBE / VIDEO PLAYER + UP NEXT */}
         {section === "videos" && <VideoLibraryView videoList={videoList} />}
       </main>
     </div>
+  );
+}
+
+export default function NavSubPage(props) {
+  return (
+    <Suspense fallback={null}>
+      <NavSubPageInner {...props} />
+    </Suspense>
   );
 }
