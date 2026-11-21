@@ -23,7 +23,13 @@ const api = async (url, opt = {}, pw) => {
     ...opt,
     headers: { "Content-Type": "application/json", ...(pw ? { "x-admin-password": pw } : {}) },
   });
-  const j = await r.json();
+  const text = await r.text();
+  let j = {};
+  try {
+    j = JSON.parse(text);
+  } catch {
+    throw new Error(`Server returned non-JSON response (${r.status}). Make sure latest code is deployed.`);
+  }
   if (!r.ok) throw new Error(j.error || "Request failed");
   return j;
 };
