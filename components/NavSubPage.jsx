@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThemeMenu from "@/components/ThemeMenu";
+import Media from "@/components/Media";
 import { VEHICLES, PAIRS, priceText, byId } from "@/lib/vehicles";
 import { ArrowLeft, BatteryCharging, Gauge, ExternalLink } from "lucide-react";
 
@@ -15,7 +16,44 @@ const NAV_ITEMS = [
   { href: "/videos", label: "VIDEOS" },
 ];
 
+const DEFAULT_VIDEOS = [
+  {
+    _id: "car-vid-1",
+    badge: "0:06 · EV SUV DRIVE",
+    title: "Electric SUV Highway Cruise & Smooth Handling",
+    description: "6-second clip showcasing an electric car cruising smoothly along an open highway.",
+    media: "https://assets.mixkit.co/videos/preview/mixkit-white-electric-car-driving-on-a-highway-42871-large.mp4",
+    mediaType: "video",
+  },
+  {
+    _id: "car-vid-2",
+    badge: "0:07 · FAST CHARGING",
+    title: "EV Charging Port Plug-In & Battery Top-Up",
+    description: "7-second close-up of connecting a charging cable to an electric vehicle.",
+    media: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4",
+    mediaType: "video",
+  },
+  {
+    _id: "car-vid-3",
+    badge: "0:08 · NIGHT RUN",
+    title: "City Night Drive & LED Headlight Beam",
+    description: "8-second night road clip highlighting car headlights and urban driving flow.",
+    media: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4",
+    mediaType: "video",
+  },
+  {
+    _id: "car-vid-4",
+    badge: "0:06 · STEERING & CABIN",
+    title: "Driver Hands on Steering Wheel & Cabin View",
+    description: "6-second interior clip focusing on steering control and driving posture.",
+    media: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-driver-on-the-steering-wheel-of-a-car-42868-large.mp4",
+    mediaType: "video",
+  },
+];
+
 const carSrc = (v) => v.photo || `/vehicles/ev-${v.img}.png`;
+const isVideoItem = (f) =>
+  f?.mediaType === "video" || /\.(mp4|webm|ogg|mov)(\?|$)/i.test(f?.media || "") || /(?:youtu\.be\/|v=|embed\/|shorts\/)/i.test(f?.media || "");
 
 export default function NavSubPage({ section, title, subtitle }) {
   const [articles, setArticles] = useState([]);
@@ -31,10 +69,10 @@ export default function NavSubPage({ section, title, subtitle }) {
 
   const brands = ["ALL", ...new Set(VEHICLES.map((v) => v.brand))];
   const filteredVehicles = brand === "ALL" ? VEHICLES : VEHICLES.filter((v) => v.brand === brand);
+  const videoList = [...features.filter(isVideoItem), ...DEFAULT_VIDEOS];
 
   return (
     <div className="min-h-screen">
-      {/* Header with Top Utility Bar + Direct Nav Links */}
       <header className="sticky top-0 z-30 border-b border-[#251a45] bg-ink/90 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-3">
@@ -49,11 +87,7 @@ export default function NavSubPage({ section, title, subtitle }) {
 
           <div className="hidden items-center gap-5 text-sm font-bold tracking-wide lg:flex">
             {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="transition-colors hover:text-volt"
-              >
+              <Link key={item.href} href={item.href} className="transition-colors hover:text-volt">
                 {item.label}
               </Link>
             ))}
@@ -193,14 +227,14 @@ export default function NavSubPage({ section, title, subtitle }) {
           </div>
         )}
 
-        {/* 5. VIDEOS & HIGHLIGHTS */}
+        {/* 5. VIDEOS (5-8 sec EV Clips + Admin Uploaded Videos) */}
         {section === "videos" && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {videoList.map((f) => (
               <article key={f._id} className="overflow-hidden rounded-2xl border border-[#251a45] bg-panel">
-                {f.media && <img src={f.media} alt={f.title} className="h-44 w-full object-cover" />}
+                <Media src={f.media} type={f.mediaType || "video"} w={f.mediaW} h={f.mediaH} alt={f.title} />
                 <div className="p-4">
-                  <span className="rounded bg-hexa/15 px-2 py-0.5 text-xs text-hexa">{f.badge}</span>
+                  <span className="rounded bg-hexa/15 px-2 py-0.5 text-xs font-semibold text-hexa">{f.badge}</span>
                   <h2 className="mt-2 font-display text-xl font-semibold">{f.title}</h2>
                   <p className="mt-1 text-sm text-slate-400">{f.description}</p>
                 </div>
