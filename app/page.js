@@ -10,7 +10,7 @@ import FaqAdmin from "@/components/FaqAdmin";
 import {
   Instagram, Youtube, Linkedin,
   Star, Phone, Mail, MapPin, Lock, X,
-  ChevronLeft, ChevronRight, ExternalLink
+  ChevronLeft, ChevronRight, ExternalLink, Zap
 } from "lucide-react";
 
 /* ===== DIRECT HERO EV NEWS (Topic-wise real photos) ===== */
@@ -114,15 +114,16 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Navbar: Golden Framed Circular Logo + EVHEXA */}
+        {/* Main Navbar: Green & Black Framed Circular Logo + EVHEXA */}
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-[15px]">
           <a href="#top" aria-label="EV HEXA home" className="flex items-center gap-3">
-            <span className="block h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border-2 border-[#de910c] p-[2px] ring-2 ring-[#f4b942]/70 shadow-[0_0_14px_rgba(244,185,66,0.45)]">
+            <span className="block h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border-2 border-[#16a34a] p-[2px] ring-2 ring-[#22c55e]/60 shadow-[0_0_14px_rgba(22,163,74,0.35)]">
               <img src="/logo.png" alt="EV HEXA" className="h-full w-full rounded-full object-cover" />
             </span>
-            <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
-              <span>EV</span>
-              <span className="text-hexa">HEXA</span>
+            <span className="inline-flex items-center font-display text-3xl font-extrabold not-italic leading-none tracking-tight">
+              <span className="text-[#16a34a]">EV</span>
+              <Zap size={20} className="mx-0.5 fill-[#16a34a] text-[#16a34a]" />
+              <span className="text-[#111827]">HEXA</span>
             </span>
           </a>
           <div className="flex items-center">
@@ -182,12 +183,13 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
           <div>
             <div className="flex items-center gap-3">
-              <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-[#de910c] p-[2px] ring-2 ring-[#f4b942]/70 shadow-[0_0_12px_rgba(244,185,66,0.4)]">
+              <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-[#16a34a] p-[2px] ring-2 ring-[#22c55e]/60 shadow-[0_0_12px_rgba(22,163,74,0.35)]">
                 <img src="/logo.png" alt="EV HEXA" className="h-full w-full rounded-full object-cover" />
               </div>
-              <span className="font-display text-3xl font-extrabold italic leading-none tracking-tight">
-                <span>EV</span>
-                <span className="text-hexa">HEXA</span>
+              <span className="inline-flex items-center font-display text-3xl font-extrabold not-italic leading-none tracking-tight">
+                <span className="text-[#16a34a]">EV</span>
+                <Zap size={20} className="mx-0.5 fill-[#16a34a] text-[#16a34a]" />
+                <span className="text-[#111827]">HEXA</span>
               </span>
             </div>
             <p className="mt-3 max-w-sm text-sm text-slate-400">
