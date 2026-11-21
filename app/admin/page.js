@@ -15,6 +15,7 @@ const SECTIONS = [
   { id: "articles", label: "4. Latest Articles" },
   { id: "compare", label: "5. Compare Electric Vehicles" },
   { id: "faqs", label: "6. FAQs on EV" },
+  { id: "videos", label: "7. Videos" },
 ];
 
 const api = async (url, opt = {}, pw) => {
@@ -124,6 +125,7 @@ export default function AdminDashboardPage() {
   const [features, setFeatures] = useState([]);
   const [articles, setArticles] = useState([]);
   const [compares, setCompares] = useState([]);
+  const [videos, setVideos] = useState([]);
 
   // Forms
   const E_NEWS = { title: "", summary: "", link: "", image: "" };
@@ -147,19 +149,25 @@ export default function AdminDashboardPage() {
   const [carB, setCarB] = useState(E_CAR);
   const [editC, setEditC] = useState(null);
 
+  const E_VID = { title: "", description: "", url: "", badge: "EV VIDEO" };
+  const [vd, setVd] = useState(E_VID);
+  const [editVid, setEditVid] = useState(null);
+
   const loadAll = async () => {
-    const [n, v, f, a, c] = await Promise.all([
+    const [n, v, f, a, c, vdData] = await Promise.all([
       api("/api/news").catch(() => []),
       api("/api/vehicles").catch(() => []),
       api("/api/features").catch(() => []),
       api("/api/articles").catch(() => []),
       api("/api/compares").catch(() => []),
+      api("/api/videos").catch(() => []),
     ]);
     setNews(n);
     setVehicles(v);
     setFeatures(f);
     setArticles(a);
     setCompares(c);
+    setVideos(vdData);
   };
 
   useEffect(() => {
@@ -207,7 +215,7 @@ export default function AdminDashboardPage() {
               <Lock size={20} className="text-volt" />
               <h1 className="font-display text-2xl font-bold">EV HEXA Admin Panel</h1>
             </div>
-            <p className="text-xs text-slate-400">Enter admin password to manage News, Popular EVs, Features, Articles, Compare EVs &amp; FAQs.</p>
+            <p className="text-xs text-slate-400">Enter admin password to manage News, Popular EVs, Features, Articles, Compare EVs, FAQs &amp; Videos.</p>
             <input type="password" autoFocus className="inp" placeholder="Admin Password" value={passInput} onChange={(e) => setPassInput(e.target.value)} required />
             {authErr && <p className="text-sm text-red-400">{authErr}</p>}
             <button className="btn w-full">Unlock Admin Dashboard</button>
@@ -237,7 +245,6 @@ export default function AdminDashboardPage() {
           </div>
         </nav>
 
-        {/* Ordered Section Tabs: 1.News 2.Popular EV 3.Features 4.Latest Article 5.Compare 6.FAQs */}
         <div className="border-t border-[#251a45] bg-panel">
           <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-2.5">
             {SECTIONS.map((s) => (
@@ -499,6 +506,102 @@ export default function AdminDashboardPage() {
 
         {/* 6. FAQs ON EV */}
         {tab === "faqs" && <FaqAdmin pw={pw} onChanged={() => setNote("FAQs updated.")} />}
+
+        {/* 7. VIDEOS */}
+        {tab === "videos" && (
+          <div className="grid gap-6 lg:grid-cols-2">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setBusy(true);
+                try {
+                  if (editVid) await api("/api/videos", { method: "PUT", body: JSON.stringify({ _id: editVid, ...vd }) }, pw);
+                  else await post("/api/videos", vd, pw);
+                  setVd(E_VID);
+                  setEditVid(null);
+                  setNote("Video saved.");
+                  await loadAll();
+                } catch (err) {
+                  setNote(err.message);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+              className="space-y-3 rounded-xl border border-[#251a45] bg-panel p-5"
+            >
+              <h2 className="font-display text-2xl font-bold">{editVid ? "Edit YouTube Video" : "Add YouTube Video"}</h2>
+              <input
+                className="inp"
+                placeholder="Video title"
+                value={vd.title}
+                onChange={(e) => setVd({ ...vd, title: e.target.value })}
+                required
+              />
+              <textarea
+                className="inp"
+                rows={3}
+                placeholder="Video description"
+                value={vd.description}
+                onChange={(e) => setVd({ ...vd, description: e.target.value })}
+                required
+              />
+              <input
+                type="url"
+                className="inp"
+                placeholder="YouTube Video URL (https://www.youtube.com/watch?v=... or youtu.be/...)"
+                value={vd.url}
+                onChange={(e) => setVd({ ...vd, url: e.target.value })}
+                required
+              />
+              <div className="flex gap-2">
+                <button disabled={busy} className="btn">{editVid ? "Update Video" : "Add Video"}</button>
+                {editVid && (
+                  <button type="button" onClick={() => { setEditVid(null); setVd(E_VID); }} className="rounded-lg border border-[#36275f] px-4">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+
+            <div>
+              <h3 className="font-display text-xl font-bold">Manage Videos ({videos.length})</h3>
+              <ul className="mt-3 space-y-2">
+                {videos.map((item) => (
+                  <li key={item._id} className="flex items-center justify-between gap-2 rounded-lg border border-[#251a45] bg-panel p-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{item.title}</p>
+                      <p className="truncate text-xs text-slate-400">{item.url}</p>
+                    </div>
+                    <span className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditVid(item._id);
+                          setVd({ title: item.title, description: item.description, url: item.url, badge: item.badge || "EV VIDEO" });
+                        }}
+                        className="rounded border border-[#36275f] px-2.5 py-1 text-xs hover:border-volt"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (confirm("Delete this video?")) {
+                            await api(`/api/videos?id=${item._id}`, { method: "DELETE" }, pw);
+                            await loadAll();
+                          }
+                        }}
+                        className="rounded border border-red-500/40 px-2.5 py-1 text-xs text-red-400"
+                      >
+                        Delete
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
