@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { MoreVertical, X } from "lucide-react";
 
 const SUBJECTS = [
-  { href: "#news", label: "News" },
-  { href: "#popular", label: "EVs" },
-  { href: "#compare", label: "Compare" },
-  { href: "#features", label: "Features" },
-  { href: "#articles", label: "Articles" },
-  { href: "#reviews", label: "Reviews" },
+  { href: "/", label: "HOME" },
+  { href: "/e-vehicles", label: "E-VEHICLES" },
+  { href: "/brands", label: "BRANDS" },
+  { href: "/compare", label: "COMPARE" },
+  { href: "/news", label: "NEWS" },
+  { href: "/blogs", label: "BLOGS" },
+  { href: "/videos", label: "VIDEOS" },
 ];
 
 export default function ThemeMenu() {
@@ -34,16 +36,16 @@ export default function ThemeMenu() {
 
   return (
     <div ref={ref} className="relative flex items-center">
-      {/* Desktop: 3-dot nahi dikhega, saare subjects directly open rahenge */}
-      <div className="hidden items-center gap-6 text-[16px] font-semibold md:flex">
+      {/* Desktop: Saare links directly open rahenge aur naye page par le jayenge */}
+      <div className="hidden items-center gap-5 text-sm font-bold tracking-wide md:flex">
         {SUBJECTS.map((s) => (
-          <a key={s.href} href={s.href} className="transition-colors hover:text-volt">
+          <Link key={s.href} href={s.href} className="transition-colors hover:text-volt">
             {s.label}
-          </a>
+          </Link>
         ))}
       </div>
 
-      {/* Mobile: Sirf chhoti screen par 3-dot dropdown dikhega */}
+      {/* Mobile: Sirf mobile par 3-dot dropdown dikhega */}
       <div className="md:hidden">
         <button
           type="button"
@@ -63,14 +65,14 @@ export default function ThemeMenu() {
             className="absolute right-0 top-full z-50 mt-2 flex min-w-[160px] flex-col gap-1 rounded-xl border border-[#36275f] bg-panel p-2 shadow-xl"
           >
             {SUBJECTS.map((s) => (
-              <a
+              <Link
                 key={s.href}
                 href={s.href}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm font-semibold hover:bg-hexa/10 hover:text-volt"
               >
                 {s.label}
-              </a>
+              </Link>
             ))}
           </div>
         )}
