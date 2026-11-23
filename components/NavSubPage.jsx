@@ -37,35 +37,7 @@ const VEHICLE_MENU = [
   },
 ];
 
-const DEFAULT_VIDEOS = [
-  {
-    _id: "yt-ev-1",
-    badge: "EV SUV",
-    title: "Electric SUVs & Highway Range Tests",
-    description: "Watch EV SUV reviews, highway cruising clips, and real-world range insights.",
-    url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-  },
-  {
-    _id: "yt-ev-2",
-    badge: "CHARGING",
-    title: "EV Charging Stations & Fast Top-Up Guide",
-    description: "Fast charger plug-in clips, charging speeds, and battery care tips for EV owners.",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4",
-  },
-  {
-    _id: "yt-ev-3",
-    badge: "2-WHEELER EV",
-    title: "Electric Scooters & Electric Bikes Walkaround",
-    description: "Explore 2-wheeler EV highlights, daily commute performance, and smart features.",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4",
-  },
-];
-
 const carSrc = (v) => v.photo || `/vehicles/ev-${v.img}.png`;
-const isVideoItem = (f) =>
-  f?.mediaType === "video" ||
-  /\.(mp4|webm|ogg|mov)(\?|$)/i.test(f?.media || "") ||
-  /(?:youtu\.be\/|v=|embed\/|shorts\/)/i.test(f?.media || "");
 
 function getYtId(url) {
   if (!url) return "";
@@ -158,7 +130,7 @@ function VideoLibraryView({ videoList, highlights }) {
       <div className="rounded-2xl border border-[#251a45] bg-panel p-5">
         <h2 className="font-display text-2xl font-bold">Welcome to the EV Video Library</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Click on any playlist or video card to open it in the website player along with the Up Next queue.
+          Click on any video card to open it in the website player along with the Up Next queue.
         </p>
       </div>
 
@@ -216,43 +188,47 @@ function VideoLibraryView({ videoList, highlights }) {
         </div>
       )}
 
-      {/* Compact YouTube Preview Cards Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {videoList.map((f) => {
-          const mediaUrl = f.url || f.media;
-          return (
-            <article
-              key={f._id}
-              onClick={() => openPlaylist(f)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && openPlaylist(f)}
-              className="group cursor-pointer overflow-hidden rounded-xl border border-[#251a45] bg-panel transition hover:border-volt"
-            >
-              <div className="relative aspect-video w-full overflow-hidden bg-black">
-                <img
-                  src={getThumb(mediaUrl)}
-                  alt={f.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <span className="absolute inset-0 grid place-items-center bg-black/25 transition group-hover:bg-black/40">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-red-600 text-white shadow-lg">
-                    <Play size={18} className="ml-0.5 fill-white" />
+      {!videoList.length ? (
+        <p className="rounded-xl border border-dashed border-[#36275f] p-6 text-sm text-slate-400">
+          No videos added yet. Add YouTube videos from the Admin Panel (7. Videos).
+        </p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {videoList.map((f) => {
+            const mediaUrl = f.url || f.media;
+            return (
+              <article
+                key={f._id}
+                onClick={() => openPlaylist(f)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && openPlaylist(f)}
+                className="group cursor-pointer overflow-hidden rounded-xl border border-[#251a45] bg-panel transition hover:border-volt"
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black">
+                  <img
+                    src={getThumb(mediaUrl)}
+                    alt={f.title}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <span className="absolute inset-0 grid place-items-center bg-black/25 transition group-hover:bg-black/40">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-red-600 text-white shadow-lg">
+                      <Play size={18} className="ml-0.5 fill-white" />
+                    </span>
                   </span>
-                </span>
-              </div>
-              <div className="p-3.5">
-                <h2 className="line-clamp-1 font-display text-base font-bold group-hover:text-volt">{f.title}</h2>
-                <p className="mt-1 line-clamp-2 text-xs text-slate-400">{f.description}</p>
-                <p className="mt-2 text-xs font-semibold text-volt">Watch video →</p>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+                </div>
+                <div className="p-3.5">
+                  <h2 className="line-clamp-1 font-display text-base font-bold group-hover:text-volt">{f.title}</h2>
+                  <p className="mt-1 line-clamp-2 text-xs text-slate-400">{f.description}</p>
+                  <p className="mt-2 text-xs font-semibold text-volt">Watch video →</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Featured Highlights Placed At The Very Bottom */}
       {highlights.length > 0 && (
         <section className="border-t border-[#251a45] pt-8">
           <h3 className="font-display text-2xl font-bold uppercase">Featured Highlights</h3>
@@ -295,7 +271,6 @@ function NavSubPageInner({ section, title, subtitle }) {
   const brands = ["ALL", ...new Set(VEHICLES.map((v) => v.brand))];
   const filteredVehicles = (brand === "ALL" ? VEHICLES : VEHICLES.filter((v) => v.brand === brand))
     .filter((v) => (section === "e-vehicles" ? matchCategory(v, selectedCat) : true));
-  const videoList = [...adminVideos, ...features.filter(isVideoItem), ...DEFAULT_VIDEOS];
 
   return (
     <div className="min-h-screen" onClick={() => evDropdownOpen && setEvDropdownOpen(false)}>
@@ -506,7 +481,7 @@ function NavSubPageInner({ section, title, subtitle }) {
           </div>
         )}
 
-        {section === "videos" && <VideoLibraryView videoList={videoList} highlights={features} />}
+        {section === "videos" && <VideoLibraryView videoList={adminVideos} highlights={features} />}
       </main>
     </div>
   );
