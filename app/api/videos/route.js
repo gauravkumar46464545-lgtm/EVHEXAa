@@ -2,10 +2,31 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { db, isAdmin } from "@/lib/db";
 
+const DEFAULT_SEED_VIDEOS = [
+  {
+    title: "Electric SUVs & Highway Range Tests",
+    description: "Watch EV SUV reviews, highway cruising clips, and real-world range insights.",
+    url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    badge: "EV SUV",
+  },
+  {
+    title: "EV Charging Stations & Fast Top-Up Guide",
+    description: "Fast charger plug-in clips, charging speeds, and battery care tips for EV owners.",
+    url: "https://assets.mixkit.co/videos/preview/mixkit-hand-plugging-a-charger-into-an-electric-car-42874-large.mp4",
+    badge: "CHARGING",
+  },
+  {
+    title: "Electric Scooters & Electric Bikes Walkaround",
+    description: "Explore 2-wheeler EV highlights, daily commute performance, and smart features.",
+    url: "https://assets.mixkit.co/videos/preview/mixkit-car-driving-on-a-city-street-at-night-34565-large.mp4",
+    badge: "2-WHEELER EV",
+  },
+];
+
 const VideoItemSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, default: "" },
     url: { type: String, required: true },
     badge: { type: String, default: "EV VIDEO" },
   },
@@ -17,7 +38,11 @@ const VideoItem = mongoose.models.VideoItem || mongoose.model("VideoItem", Video
 export async function GET() {
   try {
     await db();
-    const list = await VideoItem.find().sort({ createdAt: -1 }).lean();
+    let list = await VideoItem.find().sort({ createdAt: -1 }).lean();
+    if (!list.length) {
+      await VideoItem.insertMany(DEFAULT_SEED_VIDEOS);
+      list = await VideoItem.find().sort({ createdAt: -1 }).lean();
+    }
     return NextResponse.json(list);
   } catch (err) {
     return NextResponse.json({ error: err.message || "Failed to load videos" }, { status: 500 });
