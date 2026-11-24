@@ -110,16 +110,3 @@ export async function DELETE(req) {
     return NextResponse.json({ error: err.message || "Failed to delete video" }, { status: 500 });
   }
 }
-export async function GET() {
-  try {
-    await db();
-    let list = await VideoItem.find().sort({ createdAt: -1 }).lean();
-    if (!list.length) {
-      await VideoItem.insertMany(DEFAULT_SEED_VIDEOS);
-      list = await VideoItem.find().sort({ createdAt: -1 }).lean();
-    }
-    return NextResponse.json(list);
-  } catch (err) {
-    return NextResponse.json({ error: err.message || "Failed to load videos" }, { status: 500 });
-  }
-}
