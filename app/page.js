@@ -12,38 +12,6 @@ import {
   ChevronLeft, ChevronRight, ExternalLink, Zap
 } from "lucide-react";
 
-/* ===== DIRECT HERO EV NEWS (Topic-wise real photos) ===== */
-const HERO_NEWS = [
-  {
-    tag: "NEW EV LAUNCH",
-    title: "Tata Harrier EV & Sierra EV India Launch Timeline Confirmed",
-    summary: "Dual-motor AWD aur 500+ km real-world range ke saath nayi SUV lineup jaldi aane wali hai. Isme fast charging, V2L support aur naya connected cabin milega.",
-    image: "https://images.unsplash.com/photo-1585011664466-b7bbe92f34ef?auto=format&fit=crop&w=1600&q=80",
-    link: "#articles",
-  },
-  {
-    tag: "CHARGING UPDATE",
-    title: "India Mein 25,000+ Naye Fast Charging Stations Ka Expansion",
-    summary: "National highways par 800V ultra-fast chargers lagne se long-distance EV travel aur aasan hoga. 10 se 80% charge ab sirf 20–25 minute mein possible hoga.",
-    image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=80",
-    link: "#articles",
-  },
-  {
-    tag: "OWNER REVIEWS",
-    title: "Mahindra BE 6 & XEV 9e: Real-World Range & Highway Test",
-    summary: "Blade battery technology aur futuristic cabin ke saath highway test results saamne aaye. Owners ne ride comfort aur regen braking ko top rating di hai.",
-    image: "https://images.unsplash.com/photo-1738101001592-d135bfe87d35?auto=format&fit=crop&w=1600&q=80",
-    link: "#reviews",
-  },
-  {
-    tag: "EV SCOOTERS & POLICY",
-    title: "PM E-DRIVE Scheme: Electric Scooters & Cars Par Naye Benefits",
-    summary: "Nayi EV kharidne par road tax waiver aur charging infrastructure subsidies jari rahengi, jisse 2-wheeler aur 4-wheeler buyers ko seedha fayda milega.",
-    image: "https://images.unsplash.com/photo-1594054763281-0946baaad462?auto=format&fit=crop&w=1600&q=80",
-    link: "#popular",
-  },
-];
-
 const fmt = (d) => {
   const x = new Date(d);
   const date = x.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -147,7 +115,7 @@ export default function Home() {
       </header>
 
       <main id="top">
-        {/* Hero EV News Slider (Full Banner Tap-to-Open + Auto Slide + Car & Road) */}
+        {/* Hero EV News Slider (Database News Only) */}
         <HeroNewsBoard news={news} />
 
         <EvShowcase items={vehicles} />
@@ -232,34 +200,37 @@ export default function Home() {
   );
 }
 
-/* ---------------- Hero EV News Slider (Full Banner Tap-to-Open + Auto Slide + Car & Road) ---------------- */
+/* ---------------- Hero EV News Slider (Database News Only) ---------------- */
 function HeroNewsBoard({ news = [] }) {
-  const slides = [
-    ...news.map((n) => ({
-      tag: "LIVE EV NEWS",
-      title: n.title,
-      summary: n.summary,
-      image: n.image || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=80",
-      link: n.link || "",
-    })),
-    ...HERO_NEWS,
-  ];
+  const slides = news.map((n) => ({
+    tag: "LIVE EV NEWS",
+    title: n.title,
+    summary: n.summary,
+    image: n.image || "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=80",
+    link: n.link || "",
+  }));
 
   const [idx, setIdx] = useState(0);
   const [activeNews, setActiveNews] = useState(null);
   const touchX = useRef(0);
 
+  useEffect(() => {
+    if (idx >= slides.length) setIdx(0);
+  }, [slides.length, idx]);
+
   const prevSlide = (e) => {
     e?.stopPropagation();
+    if (!slides.length) return;
     setIdx((p) => (p - 1 + slides.length) % slides.length);
   };
   const nextSlide = (e) => {
     e?.stopPropagation();
+    if (!slides.length) return;
     setIdx((p) => (p + 1) % slides.length);
   };
 
   useEffect(() => {
-    if (activeNews) return;
+    if (activeNews || slides.length <= 1) return;
     const timer = setInterval(() => {
       setIdx((p) => (p + 1) % slides.length);
     }, 3000);
@@ -285,81 +256,99 @@ function HeroNewsBoard({ news = [] }) {
           else if (diff < -45) prevSlide();
         }}
       >
-        {/* Sliding News Track */}
-        <div
-          className="flex transition-transform duration-500 ease-out"
-          style={{ transform: `translateX(-${idx * 100}%)` }}
-        >
-          {slides.map((item, i) => (
-            <div
-              key={i}
-              onClick={() => setActiveNews(item)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && setActiveNews(item)}
-              aria-label={`Open news: ${item.title}`}
-              className="relative w-full shrink-0 cursor-pointer bg-cover bg-center"
-              style={{ backgroundImage: `url(${item.image})` }}
-            >
-              {/* Dark gradient taaki har topic photo ke upar text crisp dikhe */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/65 to-[#0e0b16]/25" />
-
-              <div className="relative z-10 mx-auto max-w-6xl px-12 pb-40 pt-8 md:px-14 md:pb-44 md:pt-10">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
-                  {item.tag}
-                </span>
-                <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
-                  {item.title}
-                </h1>
-                <p className="mt-2 line-clamp-2 max-w-xl text-sm text-slate-200 md:text-base">
-                  {item.summary}
-                </p>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <span className="btn inline-block">Read more</span>
-                  <a
-                    href="#reviews"
-                    onClick={(e) => e.stopPropagation()}
-                    className="rounded-full border border-white/35 bg-black/35 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]"
-                  >
-                    Write a review
-                  </a>
-                </div>
-              </div>
+        {!slides.length ? (
+          <div className="relative w-full bg-gradient-to-r from-[#0e0b16] via-[#191336] to-[#0e0b16]">
+            <div className="relative z-10 mx-auto max-w-6xl px-6 pb-40 pt-10 md:px-10 md:pb-44">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                EV HEXA NEWS
+              </span>
+              <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
+                No EV news published yet
+              </h1>
+              <p className="mt-2 max-w-xl text-sm text-slate-300 md:text-base">
+                Add new EV updates from the Admin Panel (1. News) to display them here.
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${idx * 100}%)` }}
+            >
+              {slides.map((item, i) => (
+                <div
+                  key={i}
+                  onClick={() => setActiveNews(item)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && setActiveNews(item)}
+                  aria-label={`Open news: ${item.title}`}
+                  className="relative w-full shrink-0 cursor-pointer bg-cover bg-center"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0e0b16]/90 via-[#0e0b16]/65 to-[#0e0b16]/25" />
 
-        {/* Left & Right Manual Arrows */}
-        <button
-          type="button"
-          onClick={prevSlide}
-          aria-label="Previous news"
-          className="absolute left-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:left-4"
-        >
-          <ChevronLeft size={22} />
-        </button>
-        <button
-          type="button"
-          onClick={nextSlide}
-          aria-label="Next news"
-          className="absolute right-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:right-4"
-        >
-          <ChevronRight size={22} />
-        </button>
+                  <div className="relative z-10 mx-auto max-w-6xl px-12 pb-40 pt-8 md:px-14 md:pb-44 md:pt-10">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[#f4b942] px-3 py-1 text-xs font-bold tracking-widest text-[#1c1408]">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#1c1408]" />
+                      {item.tag}
+                    </span>
+                    <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-white md:text-5xl">
+                      {item.title}
+                    </h1>
+                    <p className="mt-2 line-clamp-2 max-w-xl text-sm text-slate-200 md:text-base">
+                      {item.summary}
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <span className="btn inline-block">Read more</span>
+                      <a
+                        href="#reviews"
+                        onClick={(e) => e.stopPropagation()}
+                        className="rounded-full border border-white/35 bg-black/35 px-5 py-2 text-sm font-semibold text-white backdrop-blur hover:border-[#f4b942]"
+                      >
+                        Write a review
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-        {/* Slide Indicator Dots */}
-        <div className="absolute bottom-36 right-6 z-20 flex gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={(e) => { e.stopPropagation(); setIdx(i); }}
-              aria-label={`News slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/45 hover:bg-white/80"}`}
-            />
-          ))}
-        </div>
+            {slides.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevSlide}
+                  aria-label="Previous news"
+                  className="absolute left-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:left-4"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextSlide}
+                  aria-label="Next news"
+                  className="absolute right-2.5 top-[38%] z-30 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#f4b942]/60 bg-black/55 text-white backdrop-blur transition hover:bg-[#f4b942] hover:text-[#1c1408] md:right-4"
+                >
+                  <ChevronRight size={22} />
+                </button>
+
+                <div className="absolute bottom-36 right-6 z-20 flex gap-2">
+                  {slides.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setIdx(i); }}
+                      aria-label={`News slide ${i + 1}`}
+                      className={`h-2 rounded-full transition-all ${i === idx ? "w-7 bg-[#f4b942]" : "w-2 bg-white/45 hover:bg-white/80"}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        )}
 
         {/* Car & Road As-Is */}
         <MovingCar />
